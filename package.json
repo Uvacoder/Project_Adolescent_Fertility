@@ -1,0 +1,30 @@
+{
+  "name": "project1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint --fix graph.js",
+    "prettier": "prettier graph.js",
+    "start": "parcel src/index.html"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^7.17.0",
+    "eslint-config-standard": "^16.0.2",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-promise": "^4.2.1",
+    "prettier": "^2.2.1"
+  },
+  "dependencies": {
+    "d3": "^6.3.1",
+    "d3-collection": "^1.0.7",
+    "enter-view": "^2.0.1",
+    "eslint-config-prettier": "^7.1.0",
+    "topojson": "^3.0.2"
+  }
+}
