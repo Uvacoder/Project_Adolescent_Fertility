@@ -44,7 +44,7 @@ var colorScale = d3
 //   .attr('class', 'caption')
 //   .attr('x', 0)
 //   .attr('y', -6)
-//   .text('Students')
+//   .text('Rate')
 // var labels = ['0', '1-5', '6-10', '11-25', '26-100', '101-1000', '> 1000']
 
 // var legend = d3
