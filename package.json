@@ -25,6 +25,7 @@
     "d3-collection": "^1.0.7",
     "enter-view": "^2.0.1",
     "eslint-config-prettier": "^7.1.0",
+    "react": "^17.0.1",
     "topojson": "^3.0.2"
   }
 }

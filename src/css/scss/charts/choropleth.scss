@@ -1,0 +1,30 @@
+.mesh-path {
+  stroke: white;
+  stroke-width: 0.5;
+  fill: none;
+}
+
+.country-path {
+  transition: fill 0.5s ease-in-out;
+}
+
+.color-legend {
+  max-width: 600px;
+  margin: 0 auto 10px;
+  svg {
+    overflow: visible;
+    display: block;
+    margin: auto;
+  }
+
+  .legend-tick {
+    .tick-line {
+      stroke: #333;
+    }
+  }
+  .tick-text {
+    font-size: 12px;
+    fill: #333;
+    text-anchor: middle;
+  }
+}
