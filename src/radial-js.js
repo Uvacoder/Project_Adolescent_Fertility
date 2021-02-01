@@ -248,19 +248,19 @@ var mode = 'Play';
       .attr("transform", function(d) {
         return "rotate(" + (x(d.Region)) / fullCircle * 360 + ")";
       })
-      .on("mouseover", function(d) {
-        var multiplier = y(Math.round(d.Value)) 
+      .on("mouseover", function(d, i) {
+        var multiplier = y(Math.round(i.Value)) 
         var unit = "avg";
-        var labelText = (Math.round(d.Value)).toString() + " births per 1,000 teenagers" 
+        var labelText = (Math.round(i.Value)).toString() + " births per 1,000 teenagers" 
 
         
           d3.select(this.parentNode).append("text")
           
           .attr("x", function() {
-            return Math.cos(x(d.Region) + Math.PI / 2) * multiplier;
+            return Math.cos(x(i.Region) + Math.PI / 2) * multiplier;
           })
           .attr("y", function() {
-            return Math.sin(x(d.Region) + Math.PI / 2) * multiplier;
+            return Math.sin(x(i.Region) + Math.PI / 2) * multiplier;
           })
           .attr("dy", "-1em")
           .style("fill", "#000000")

@@ -88,20 +88,10 @@ function ready(datapoints) {
       return d.Region
     })
     .entries(datapoints)
-  // console.log('nested data look like', nested)
-
-  // var topData = datapoints.slice(0, 10)
-
-  // console.log('top ten data is', topData)
-
-  // var continents = datapoints.map(d => {
-  //   return d.continent
-  // })
-  // console.log(continents)
 
   // make a list of Sub Saharan Countries
   var Africa= [
-    'Angola',
+'Angola',
 'Benin',
 'Botswana',
 'Burkina Faso',
@@ -151,9 +141,8 @@ function ready(datapoints) {
 'Zimbabwe'
   ]
 
-  var Europe_Central= [
-    'Albania',
-    'Andorra',
+var Europe_Central= [
+'Albania',
 'Armenia',
 'Austria',
 'Azerbaijan',
@@ -221,7 +210,8 @@ var topData=
 'Chad',
 'Mali',
 'Niger',
-'Andorra'
+'Azerbaijan',
+'Tajikistan'
 ]
 
   var circles = svg

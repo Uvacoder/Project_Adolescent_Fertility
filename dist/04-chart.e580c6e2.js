@@ -31284,8 +31284,9 @@ var margin = {
 };
 var height = 700 - margin.top - margin.bottom;
 var width = 1000 - margin.left - margin.right;
-var svg = d3.select('#chart-4').append('svg').attr('height', height + margin.top + margin.bottom).attr('width', width + margin.left + margin.right).append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-var radiusScale = d3.scaleSqrt().domain([0, 5000]).range([2, 100]);
+var svg = d3.select('#chart-4').append('svg').attr('height', height + margin.top + margin.bottom).attr('width', width + margin.left + margin.right).append('g') // .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+.attr('transform', 'translate(0,0)');
+var radiusScale = d3.scaleSqrt().domain([0, 3000]).range([2, 100]);
 var colorScale = d3.scaleSqrt().domain([0, 131621367]).range(['#E5D4F3', '#b379ce']);
 var div = d3.select('body').append('div').attr('class', 'tooltip').style('opacity', 0);
 var forceXSeparate = d3.forceX(function (d) {
@@ -31323,18 +31324,11 @@ function ready(datapoints) {
   });
   var nested = (0, _d3Collection.nest)().key(function (d) {
     return d.Region;
-  }).entries(datapoints); // console.log('nested data look like', nested)
-  // var topData = datapoints.slice(0, 10)
-  // console.log('top ten data is', topData)
-  // var continents = datapoints.map(d => {
-  //   return d.continent
-  // })
-  // console.log(continents)
-  // make a list of Sub Saharan Countries
+  }).entries(datapoints); // make a list of Sub Saharan Countries
 
   var Africa = ['Angola', 'Benin', 'Botswana', 'Burkina Faso', 'Burundi', 'Cameroon', 'Cape Verde', 'Central African Republic', 'Chad', 'Comoros', 'Democratic Republic of the Congo', 'Equatorial Guinea', 'Eritrea', 'Ethiopia', 'Gabon', 'Gambia', 'Ghana', 'Guinea', 'Guinea Bissau', 'Ivory Coast', 'Kenya', 'Lesotho', 'Liberia', 'Madagascar', 'Malawi', 'Mali', 'Mauritania', 'Mauritius', 'Mozambique', 'Namibia', 'Niger', 'Nigeria', 'Republic of Congo', 'Rwanda', 'Sao Tome and Principe', 'Senegal', 'Seychelles', 'Sierra Leone', 'Somalia', 'South Africa', 'South Sudan', 'Sudan', 'Swaziland', 'Togo', 'Uganda', 'United Republic of Tanzania', 'Zambia', 'Zimbabwe'];
-  var Europe_Central = ['Albania', 'Andorra', 'Armenia', 'Austria', 'Azerbaijan', 'Belarus', 'Belgium', 'Bosnia and Herzegovina', 'Bulgaria', 'Croatia', 'Cyprus', 'Czech Republic', 'Denmark', 'Estonia', 'Faroe Islands', 'Finland', 'France', 'Georgia', 'Germany', 'Gibraltar', 'Greece', 'Hungary', 'Iceland', 'Ireland', 'Isle of Man', 'Italy', 'Kazakhstan', 'Kyrgyzstan', 'Latvia', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Macedonia', 'Moldova', 'Monaco', 'Montenegro', 'Netherlands', 'Norway', 'Poland', 'Portugal', 'Republic of Serbia', 'Romania', 'Russia', 'San Marino', 'Slovakia', 'Slovenia', 'Spain', 'Sweden', 'Switzerland', 'Tajikistan', 'Turkey', 'Turkmenistan', 'Ukraine', 'United Kingdom', 'Uzbekistan'];
-  var topData = ['Central African Republic', 'Malawi', 'Guinea', 'Liberia', 'Mozambique', 'Angola', 'Equatorial Guinea', 'Chad', 'Mali', 'Niger', 'Andorra'];
+  var Europe_Central = ['Albania', 'Armenia', 'Austria', 'Azerbaijan', 'Belarus', 'Belgium', 'Bosnia and Herzegovina', 'Bulgaria', 'Croatia', 'Cyprus', 'Czech Republic', 'Denmark', 'Estonia', 'Faroe Islands', 'Finland', 'France', 'Georgia', 'Germany', 'Gibraltar', 'Greece', 'Hungary', 'Iceland', 'Ireland', 'Isle of Man', 'Italy', 'Kazakhstan', 'Kyrgyzstan', 'Latvia', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Macedonia', 'Moldova', 'Monaco', 'Montenegro', 'Netherlands', 'Norway', 'Poland', 'Portugal', 'Republic of Serbia', 'Romania', 'Russia', 'San Marino', 'Slovakia', 'Slovenia', 'Spain', 'Sweden', 'Switzerland', 'Tajikistan', 'Turkey', 'Turkmenistan', 'Ukraine', 'United Kingdom', 'Uzbekistan'];
+  var topData = ['Central African Republic', 'Malawi', 'Guinea', 'Liberia', 'Mozambique', 'Angola', 'Equatorial Guinea', 'Chad', 'Mali', 'Niger', 'Azerbaijan', 'Tajikistan'];
   var circles = svg.selectAll('.countries').data(datapoints).enter().append('circle').attr('r', function (d) {
     return radiusScale(d.Adolescent_Fertility_Rate);
   }).attr('opacity', 0.95).attr('class', function (d) {
@@ -31362,11 +31356,13 @@ function ready(datapoints) {
     }
   }).attr('fill', function (d) {
     return colorScale(d.Adolescent_Fertility_Rate);
-  }).on('mousemove', function (d) {
-    div.html(d.ADMIN + '<br>' + d.Adolescent_Fertility_Rate.toLocaleString()).style('left', d3.event.pageX + 'px').style('top', d3.event.pageY - 28 + 'px').style('display', 'block');
+  }).on('mousemove', function (d, i) {
+    div.html(i.ADMIN + '<br>' + convertToLocaleString(i.Adolescent_Fertility_Rate)) //.toLocaleString())
+    .style('left', d.pageX + 'px').style('top', d.pageY - 28 + 'px').style('display', 'block').attr("dy", "-1em").style("fill", "#000000").style("font-size", "small").attr("text-anchor", "middle");
   }).on('mouseover', function (d, i) {
     div.transition().style('opacity', 0.9);
-    div.html(d.ADMIN + '<br>' + d.Adolescent_Fertility_Rate.toLocaleString()).style('left', d3.event.pageX + 'px').style('top', d3.event.pageY - 28 + 'px');
+    div.html(i.ADMIN + '<br>' + convertToLocaleString(i.Adolescent_Fertility_Rate)) //.toLocaleString())
+    .style('left', d.pageX + 'px').style('top', d.pageY - 28 + 'px').attr("dy", "-1em").style("fill", "#000000").style("font-size", "small").attr("text-anchor", "middle");
     d3.select('#country' + i).transition().style('stroke', 'white').style('stroke-width', 2.5);
   }).on('mouseout', function (d, i) {
     div.transition().style('opacity', 0);
@@ -31374,7 +31370,8 @@ function ready(datapoints) {
   });
   svg.selectAll('.continent-label').data(nested).enter().append('text').text(function (d) {
     return d.key;
-  }).attr('font-size', 18).attr('font-weight', 500).attr('class', 'continent-label').attr('x', function (d) {
+  }).attr('font-size', 18).attr('font-weight', 500) // .attr('class', 'continent-label')
+  .attr('x', function (d) {
     if (d.key === 'Europe & Central Asia') {
       // console.log(d.key)
       return 250;
@@ -31388,11 +31385,11 @@ function ready(datapoints) {
     } else if (d.key === 'Sub-Saharan Africa') {
       return 0;
     }
-  }).attr('fill', 'white').attr('text-anchor', 'middle').attr('opacity', 0.7).attr('visibility', 'hidden'); // add text-label on each circle
+  }).attr("dy", "-1em").style("fill", "#000000").style("font-size", "small").attr("text-anchor", "middle").attr('opacity', 0.7).attr('visibility', 'hidden'); // add text-label on each circle
 
   var nodeText = svg.selectAll('.countries-label').data(datapoints).enter().append('text').attr('class', 'countries-label').text(function (d) {
-    return d.ADMIN + '\n' + d.Adolescent_Fertility_Rate.toLocaleString();
-  }).attr('text-anchor', 'middle').attr('font-size', 11).attr('fill', 'white').classed('Niger-label', function (d) {
+    return d.ADMIN + '\n' + convertToLocaleString(d.Adolescent_Fertility_Rate); //.toLocaleString()
+  }).attr("dy", "-1em").style("fill", "#000000").style("font-size", "small").attr("text-anchor", "middle").classed('Niger-label', function (d) {
     // console.log(d)
     if (d.ADMIN === 'Niger') {
       return true;
@@ -31486,6 +31483,14 @@ function ready(datapoints) {
     svg.selectAll('.top-ten-label').transition().style('visibility', 'visible');
   });
 }
+
+function convertToLocaleString(val) {
+  try {
+    return val.toLocaleString();
+  } catch (error) {
+    return null;
+  }
+}
 },{"d3":"../node_modules/d3/index.js","d3-collection":"../node_modules/d3-collection/src/index.js","/data/all.csv":"data/all.csv"}],"../../../../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -31514,7 +31519,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49380" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49531" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
