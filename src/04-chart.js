@@ -1,4 +1,5 @@
 import * as d3 from 'd3'
+import {nest} from 'd3-collection';
 
 var margin = {
   top: 50,
@@ -17,11 +18,11 @@ let svg = d3
   .attr('height', height + margin.top + margin.bottom)
   .attr('width', width + margin.left + margin.right)
   .append('g')
-  .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
-
+  // .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+  .attr('transform', 'translate(0,0)')
 var radiusScale = d3
   .scaleSqrt()
-  .domain([0, 140000000])
+  .domain([0, 3000])
   .range([2, 100])
 
 var colorScale = d3
@@ -70,20 +71,19 @@ var simulation = d3
   .force('collide', forceCollide)
   .force('charge', forceCharge)
 
-d3.csv(require('./data/all.csv'))
+d3.csv(require('/data/all.csv'))
   .then(ready)
   .catch(err => console.log('Failed on', err))
 
 function ready(datapoints) {
-  // console.log(datapoints)22
+  console.log(datapoints)
 
   datapoints.forEach(d => {
     // console.log(d)
     d.Adolescent_Fertility_Rate = +d.Adolescent_Fertility_Rate
   })
 
-  var nested = d3
-    .nest()
+  var nested = nest()
     .key(function(d) {
       return d.Region
     })
@@ -262,19 +262,28 @@ var topData=
       }
     })
     .attr('fill', d => colorScale(d.Adolescent_Fertility_Rate))
-    .on('mousemove', function(d) {
+    .on('mousemove', function(d, i) {
       div
-        .html(d.ADMIN + '<br>' + d.Adolescent_Fertility_Rate.toLocaleString())
-        .style('left', d3.event.pageX + 'px')
-        .style('top', d3.event.pageY - 28 + 'px')
+        .html(i.ADMIN + '<br>' + convertToLocaleString(i.Adolescent_Fertility_Rate))//.toLocaleString())
+        .style('left', d.pageX + 'px')
+        .style('top', d.pageY - 28 + 'px')
         .style('display', 'block')
+        .attr("dy", "-1em")
+        .style("fill", "#000000")
+        .style("font-size", "small")
+        .attr("text-anchor", "middle")
     })
     .on('mouseover', function(d, i) {
       div.transition().style('opacity', 0.9)
       div
-        .html(d.ADMIN + '<br>' + d.Adolescent_Fertility_Rate.toLocaleString())
-        .style('left', d3.event.pageX + 'px')
-        .style('top', d3.event.pageY - 28 + 'px')
+        .html(i.ADMIN + '<br>' + convertToLocaleString(i.Adolescent_Fertility_Rate)) //.toLocaleString())
+        .style('left', d.pageX + 'px')
+        .style('top', d.pageY - 28 + 'px')
+        .attr("dy", "-1em")
+        .style("fill", "#000000")
+        .style("font-size", "small")
+        .attr("text-anchor", "middle")
+
       d3.select('#country' + i)
         .transition()
         .style('stroke', 'white')
@@ -296,7 +305,9 @@ var topData=
     .text(d => d.key)
     .attr('font-size', 18)
     .attr('font-weight', 500)
-    .attr('class', 'continent-label')
+    // .attr('class', 'continent-label')
+    
+
     .attr('x', function(d) {
       if (d.key === 'Europe & Central Asia') {
         // console.log(d.key)
@@ -313,8 +324,12 @@ var topData=
         return 0
       }
     })
-    .attr('fill', 'white')
-    .attr('text-anchor', 'middle')
+    
+    .attr("dy", "-1em")
+    .style("fill", "#000000")
+    .style("font-size", "small")
+    .attr("text-anchor", "middle")
+
     .attr('opacity', 0.7)
     .attr('visibility', 'hidden')
 
@@ -326,11 +341,14 @@ var topData=
     .append('text')
     .attr('class', 'countries-label')
     .text(function(d) {
-      return d.ADMIN + '\n' + d.Adolescent_Fertility_Rate.toLocaleString()
+      return d.ADMIN + '\n' + convertToLocaleString(d.Adolescent_Fertility_Rate) //.toLocaleString()
     })
-    .attr('text-anchor', 'middle')
-    .attr('font-size', 11)
-    .attr('fill', 'white')
+    .attr("dy", "-1em")
+    .style("fill", "#000000")
+    .style("font-size", "small")
+    .attr("text-anchor", "middle")
+
+
     .classed('Niger-label', d => {
       // console.log(d)
       if (d.ADMIN === 'Niger') {
@@ -507,4 +525,12 @@ var topData=
       .transition()
       .style('visibility', 'visible')
   })
+}
+
+function convertToLocaleString(val) {
+  try {
+    return val.toLocaleString()   
+  } catch (error) {
+    return null
+  }
 }

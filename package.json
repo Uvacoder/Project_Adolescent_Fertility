@@ -23,6 +23,7 @@
   "dependencies": {
     "d3": "^6.3.1",
     "d3-collection": "^1.0.7",
+    "data": "^0.6.1",
     "enter-view": "^2.0.1",
     "eslint-config-prettier": "^7.1.0",
     "react": "^17.0.1",

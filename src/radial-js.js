@@ -1,5 +1,7 @@
-function initiateRadialChart() {
-  var mode = 'Play';
+// function initiateRadialChart() {
+// import {scaleRadial} from 'd3-scale'
+import * as d3 from 'd3'
+var mode = 'Play';
 
   var timeout;
 
@@ -419,6 +421,6 @@ function initiateRadialChart() {
         }
     });
 }
-}
+// }
 
-window.onload = initiateRadialChart;
+// initiateRadialChart()
