@@ -33741,7 +33741,7 @@ var colorScale = d3.scaleThreshold().domain(d3.range(0, 160)).range(d3.schemeRdP
 //   .attr('class', 'caption')
 //   .attr('x', 0)
 //   .attr('y', -6)
-//   .text('Students')
+//   .text('Rate')
 // var labels = ['0', '1-5', '6-10', '11-25', '26-100', '101-1000', '> 1000']
 // var legend = d3
 //   .legendColor()
@@ -33787,15 +33787,11 @@ function ready(_ref) {
   // console.log(json.features)
   svg.append('g').attr('class', 'countries').selectAll('path').data(json.features).enter().append('path').attr('fill', function (d) {
     if (d) {
-      return colorScale(d.YR2018 = data.get(d.id));
+      return colorScale(d.YR2018);
     } else {
       return '#ccc';
     }
-  }) // .style(
-  //   'fill',
-  //   d => (d ? colorScale((d.YR2018 = data.get(d.id))) : 'white')
-  // )
-  .attr('d', path).attr('stroke', '#888888').attr('stroke-width', 0.5);
+  }).attr('d', path).attr('stroke', '#888888').attr('stroke-width', 0.5);
 }
 },{"d3":"../node_modules/d3/index.js","topojson":"../node_modules/topojson/index.js","./data/dataformap.csv":"data/dataformap.csv"}],"../../../../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
@@ -33825,7 +33821,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51023" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58335" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

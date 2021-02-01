@@ -3,9 +3,11 @@ function initiateRadialChart() {
 
   var timeout;
 
+  var speed = 1200;
+
   var margin = {top: 100, right: 100, bottom: 100, left: 100};
   
-  var width = 960 - margin.left - margin.right,
+  var width = 560 - margin.left - margin.right,
       height = 500 - margin.top - margin.bottom;
   
   var svg = d3.select('#radar-live-chart')//d3.select("body").append("svg")
@@ -22,27 +24,35 @@ function initiateRadialChart() {
   // })
 
 
-  var playButton = d3.select("#play-button");
+  // var playButton = d3.select("#play-button");
   
-  playButton.on("click", function() {
-    if (mode === "Play") {
-      mode = "Stop"
-      playButton.text("Play")
-      stopLoop();
-    } else {
-      mode = "Play"
-      playButton.text("Stop")
-      playLoop();
-    }
+  // playButton.on("click", function() {
+  //   if (mode === "Play") {
+  //     mode = "Stop"
+  //     playButton.text("Play")
+  //     stopLoop();
+  //   } else {
+  //     mode = "Play"
+  //     playButton.text("Stop")
+  //     playLoop();
+  //   }
+  // })
+
+  //Change event for year selected
+  d3.select("#year-selected").on("change", function() {
+    let data = raw_json_data.find(item => item.Year == this.value);
+    mode = "Stop";
+    stopLoop();
+    change(data);
   })
 
   
   var radius = Math.min(width, height) / 2 + 10;
-  var radiusTextSpacing = 50;
+  var radiusTextSpacing = 55;
   
   var fullCircle = 2 * Math.PI;
   
-  var dotRadius = 2;
+  var dotRadius = 4;
   
   var x = d3.scaleBand()
     .range([0, 2 * Math.PI]);
@@ -65,16 +75,27 @@ function initiateRadialChart() {
       return x(d.Region);
     })
     .outerRadius(function(d) { return y(d.Value)})
+    // .curve(d3.curveCatmullRomClosed)
+    // .curve(d3.curveCatmullRomClosed.alpha(0));
+    // .curve(d3.curveCardinal.tension(0.5));
     .curve(d3.curveLinearClosed)
   
   var chart_title, runs, hoverCirclesRuns, labels;
   var yTick, yAxis;
   
   // TODO: Update variable, Get dynamic data from server
-  var raw_json_data = [{"Year": "2010", "Data": [{"Region": "EAS", "Value": "20.072114", "Name": "East Asia and the Pacific", "Color": "#808080", "Position": 0}, {"Region": "ECS", "Value": "20.9688877661965", "Name": "Europe & Central Asia", "Color": "#808080", "Position": 1}, {"Region": "NAC", "Value": "30.7524460570081", "Name": "North America", "Color": "#808080", "Position": 2}, {"Region": "SSF", "Value": "115.176700970633", "Name": "Sub-Saharan Africa", "Color": "#808080", "Position": 3}, {"Region": "LCN", "Value": "70.3932662981317", "Name": "Latin America & the Caribbean", "Color": "#808080", "Position": 4}, {"Region": "MEA", "Value": "39.4521806264201", "Name": "Middle East & North Africa", "Color": "#808080", "Position": 5}, {"Region": "SAS", "Value": "43.3104530606295", "Name": "South Asia", "Color": "#808080", "Position": 6}]}, {"Year": "2011", "Data": [{"Region": "EAS", "Value": "20.588081729857", "Name": "East Asia and the Pacific", "Color": "#808080", "Position": 0}, {"Region": "ECS", "Value": "20.4681440292032", "Name": "Europe & Central Asia", "Color": "#808080", "Position": 1}, {"Region": "NAC", "Value": "28.5936623498961", "Name": "North America", "Color": "#808080", "Position": 2}, {"Region": "SSF", "Value": "113.55241388591", "Name": "Sub-Saharan Africa", "Color": "#808080", "Position": 3}, {"Region": "LCN", "Value": "69.2865255279987", "Name": "Latin America & the Caribbean", "Color": "#808080", "Position": 4}, {"Region": "MEA", "Value": "40.0251119377137", "Name": "Middle East & North Africa", "Color": "#808080", "Position": 5}, {"Region": "SAS", "Value": "40.6595839220271", "Name": "South Asia", "Color": "#808080", "Position": 6}]}, {"Year": "2012", "Data": [{"Region": "EAS", "Value": "20.9557397491113", "Name": "East Asia and the Pacific", "Color": "#808080", "Position": 0}, {"Region": "ECS", "Value": "19.9614509560383", "Name": "Europe & Central Asia", "Color": "#808080", "Position": 1}, {"Region": "NAC", "Value": "26.4355245365078", "Name": "North America", "Color": "#808080", "Position": 2}, {"Region": "SSF", "Value": "111.90814056992", "Name": "Sub-Saharan Africa", "Color": "#808080", "Position": 3}, {"Region": "LCN", "Value": "68.1723762870795", "Name": "Latin America & the Caribbean", "Color": "#808080", "Position": 4}, {"Region": "MEA", "Value": "40.6309626496809", "Name": "Middle East & North Africa", "Color": "#808080", "Position": 5}, {"Region": "SAS", "Value": "38.0078949169445", "Name": "South Asia", "Color": "#808080", "Position": 6}]}, {"Year": "2013", "Data": [{"Region": "EAS", "Value": "20.9115905223091", "Name": "East Asia and the Pacific", "Color": "#808080", "Position": 0}, {"Region": "ECS", "Value": "19.3561871781597", "Name": "Europe & Central Asia", "Color": "#808080", "Position": 1}, {"Region": "NAC", "Value": "24.9141341936224", "Name": "North America", "Color": "#808080", "Position": 2}, {"Region": "SSF", "Value": "110.049607180282", "Name": "Sub-Saharan Africa", "Color": "#808080", "Position": 3}, {"Region": "LCN", "Value": "67.1531940114908", "Name": "Latin America & the Caribbean", "Color": "#808080", "Position": 4}, {"Region": "MEA", "Value": "40.6395043735482", "Name": "Middle East & North Africa", "Color": "#808080", "Position": 5}, {"Region": "SAS", "Value": "35.5715016377883", "Name": "South Asia", "Color": "#808080", "Position": 6}]}, {"Year": "2014", "Data": [{"Region": "EAS", "Value": "20.8373777809131", "Name": "East Asia and the Pacific", "Color": "#808080", "Position": 0}, {"Region": "ECS", "Value": "18.7726859069412", "Name": "Europe & Central Asia", "Color": "#808080", "Position": 1}, {"Region": "NAC", "Value": "23.3992229635975", "Name": "North America", "Color": "#808080", "Position": 2}, {"Region": "SSF", "Value": "108.206223869023", "Name": "Sub-Saharan Africa", "Color": "#808080", "Position": 3}, {"Region": "LCN", "Value": "66.1339079981389", "Name": "Latin America & the Caribbean", "Color": "#808080", "Position": 4}, {"Region": "MEA", "Value": "40.6017724457825", "Name": "Middle East & North Africa", "Color": "#808080", "Position": 5}, {"Region": "SAS", "Value": "33.1144994870789", "Name": "South Asia", "Color": "#808080", "Position": 6}]}, {"Year": "2015", "Data": [{"Region": "EAS", "Value": "20.7927291470796", "Name": "East Asia and the Pacific", "Color": "#808080", "Position": 0}, {"Region": "ECS", "Value": "18.2086803071959", "Name": "Europe & Central Asia", "Color": "#808080", "Position": 1}, {"Region": "NAC", "Value": "21.8899735487449", "Name": "North America", "Color": "#808080", "Position": 2}, {"Region": "SSF", "Value": "106.385944010197", "Name": "Sub-Saharan Africa", "Color": "#808080", "Position": 3}, {"Region": "LCN", "Value": "65.1129054186921", "Name": "Latin America & the Caribbean", "Color": "#808080", "Position": 4}, {"Region": "MEA", "Value": "40.4988228269663", "Name": "Middle East & North Africa", "Color": "#808080", "Position": 5}, {"Region": "SAS", "Value": "30.6349804819207", "Name": "South Asia", "Color": "#808080", "Position": 6}]}, {"Year": "2016", "Data": [{"Region": "EAS", "Value": "20.7303920630287", "Name": "East Asia and the Pacific", "Color": "#808080", "Position": 0}, {"Region": "ECS", "Value": "17.6388596528956", "Name": "Europe & Central Asia", "Color": "#808080", "Position": 1}, {"Region": "NAC", "Value": "20.3731213412371", "Name": "North America", "Color": "#808080", "Position": 2}, {"Region": "SSF", "Value": "104.575840549692", "Name": "Sub-Saharan Africa", "Color": "#808080", "Position": 3}, {"Region": "LCN", "Value": "64.0671852799992", "Name": "Latin America & the Caribbean", "Color": "#808080", "Position": 4}, {"Region": "MEA", "Value": "40.2426989322918", "Name": "Middle East & North Africa", "Color": "#808080", "Position": 5}, {"Region": "SAS", "Value": "28.1174953037681", "Name": "South Asia", "Color": "#808080", "Position": 6}]}, {"Year": "2017", "Data": [{"Region": "EAS", "Value": "20.6689835926567", "Name": "East Asia and the Pacific", "Color": "#808080", "Position": 0}, {"Region": "ECS", "Value": "17.0886924276063", "Name": "Europe & Central Asia", "Color": "#808080", "Position": 1}, {"Region": "NAC", "Value": "18.8554418232832", "Name": "North America", "Color": "#808080", "Position": 2}, {"Region": "SSF", "Value": "102.788585175762", "Name": "Sub-Saharan Africa", "Color": "#808080", "Position": 3}, {"Region": "LCN", "Value": "63.0300016489983", "Name": "Latin America & the Caribbean", "Color": "#808080", "Position": 4}, {"Region": "MEA", "Value": "39.9706780005772", "Name": "Middle East & North Africa", "Color": "#808080", "Position": 5}, {"Region": "SAS", "Value": "25.584972419587", "Name": "South Asia", "Color": "#808080", "Position": 6}]}, {"Year": "2018", "Data": [{"Region": "EAS", "Value": "20.6900901276043", "Name": "East Asia and the Pacific", "Color": "#808080", "Position": 0}, {"Region": "ECS", "Value": "16.6254477998961", "Name": "Europe & Central Asia", "Color": "#808080", "Position": 1}, {"Region": "NAC", "Value": "17.6419501986564", "Name": "North America", "Color": "#808080", "Position": 2}, {"Region": "SSF", "Value": "101.220225106526", "Name": "Sub-Saharan Africa", "Color": "#808080", "Position": 3}, {"Region": "LCN", "Value": "62.0981418807705", "Name": "Latin America & the Caribbean", "Color": "#808080", "Position": 4}, {"Region": "MEA", "Value": "39.7044596608902", "Name": "Middle East & North Africa", "Color": "#808080", "Position": 5}, {"Region": "SAS", "Value": "24.5230468897055", "Name": "South Asia", "Color": "#808080", "Position": 6}]}]
+  var raw_json_data = [{"Year": "2010", "Data": [{"Region": "EAS", "Value": "20.072114", "Name": "East Asia and the Pacific", "Color": "#000000", "Position": 0}, {"Region": "ECS", "Value": "20.9688877661965", "Name": "Europe & Central Asia", "Color": "#000000", "Position": 1}, {"Region": "NAC", "Value": "30.7524460570081", "Name": "North America", "Color": "#000000", "Position": 2}, {"Region": "SSF", "Value": "115.176700970633", "Name": "Sub-Saharan Africa", "Color": "#000000", "Position": 3}, {"Region": "LCN", "Value": "70.3932662981317", "Name": "Latin America & the Caribbean", "Color": "#000000", "Position": 4}, {"Region": "MEA", "Value": "39.4521806264201", "Name": "Middle East & North Africa", "Color": "#000000", "Position": 5}, {"Region": "SAS", "Value": "43.3104530606295", "Name": "South Asia", "Color": "#000000", "Position": 6}]}, {"Year": "2011", "Data": [{"Region": "EAS", "Value": "20.588081729857", "Name": "East Asia and the Pacific", "Color": "#000000", "Position": 0}, {"Region": "ECS", "Value": "20.4681440292032", "Name": "Europe & Central Asia", "Color": "#000000", "Position": 1}, {"Region": "NAC", "Value": "28.5936623498961", "Name": "North America", "Color": "#000000", "Position": 2}, {"Region": "SSF", "Value": "113.55241388591", "Name": "Sub-Saharan Africa", "Color": "#000000", "Position": 3}, {"Region": "LCN", "Value": "69.2865255279987", "Name": "Latin America & the Caribbean", "Color": "#000000", "Position": 4}, {"Region": "MEA", "Value": "40.0251119377137", "Name": "Middle East & North Africa", "Color": "#000000", "Position": 5}, {"Region": "SAS", "Value": "40.6595839220271", "Name": "South Asia", "Color": "#000000", "Position": 6}]}, {"Year": "2012", "Data": [{"Region": "EAS", "Value": "20.9557397491113", "Name": "East Asia and the Pacific", "Color": "#000000", "Position": 0}, {"Region": "ECS", "Value": "19.9614509560383", "Name": "Europe & Central Asia", "Color": "#000000", "Position": 1}, {"Region": "NAC", "Value": "26.4355245365078", "Name": "North America", "Color": "#000000", "Position": 2}, {"Region": "SSF", "Value": "111.90814056992", "Name": "Sub-Saharan Africa", "Color": "#000000", "Position": 3}, {"Region": "LCN", "Value": "68.1723762870795", "Name": "Latin America & the Caribbean", "Color": "#000000", "Position": 4}, {"Region": "MEA", "Value": "40.6309626496809", "Name": "Middle East & North Africa", "Color": "#000000", "Position": 5}, {"Region": "SAS", "Value": "38.0078949169445", "Name": "South Asia", "Color": "#000000", "Position": 6}]}, {"Year": "2013", "Data": [{"Region": "EAS", "Value": "20.9115905223091", "Name": "East Asia and the Pacific", "Color": "#000000", "Position": 0}, {"Region": "ECS", "Value": "19.3561871781597", "Name": "Europe & Central Asia", "Color": "#000000", "Position": 1}, {"Region": "NAC", "Value": "24.9141341936224", "Name": "North America", "Color": "#000000", "Position": 2}, {"Region": "SSF", "Value": "110.049607180282", "Name": "Sub-Saharan Africa", "Color": "#000000", "Position": 3}, {"Region": "LCN", "Value": "67.1531940114908", "Name": "Latin America & the Caribbean", "Color": "#000000", "Position": 4}, {"Region": "MEA", "Value": "40.6395043735482", "Name": "Middle East & North Africa", "Color": "#000000", "Position": 5}, {"Region": "SAS", "Value": "35.5715016377883", "Name": "South Asia", "Color": "#000000", "Position": 6}]}, {"Year": "2014", "Data": [{"Region": "EAS", "Value": "20.8373777809131", "Name": "East Asia and the Pacific", "Color": "#000000", "Position": 0}, {"Region": "ECS", "Value": "18.7726859069412", "Name": "Europe & Central Asia", "Color": "#000000", "Position": 1}, {"Region": "NAC", "Value": "23.3992229635975", "Name": "North America", "Color": "#000000", "Position": 2}, {"Region": "SSF", "Value": "108.206223869023", "Name": "Sub-Saharan Africa", "Color": "#000000", "Position": 3}, {"Region": "LCN", "Value": "66.1339079981389", "Name": "Latin America & the Caribbean", "Color": "#000000", "Position": 4}, {"Region": "MEA", "Value": "40.6017724457825", "Name": "Middle East & North Africa", "Color": "#000000", "Position": 5}, {"Region": "SAS", "Value": "33.1144994870789", "Name": "South Asia", "Color": "#000000", "Position": 6}]}, {"Year": "2015", "Data": [{"Region": "EAS", "Value": "20.7927291470796", "Name": "East Asia and the Pacific", "Color": "#000000", "Position": 0}, {"Region": "ECS", "Value": "18.2086803071959", "Name": "Europe & Central Asia", "Color": "#000000", "Position": 1}, {"Region": "NAC", "Value": "21.8899735487449", "Name": "North America", "Color": "#000000", "Position": 2}, {"Region": "SSF", "Value": "106.385944010197", "Name": "Sub-Saharan Africa", "Color": "#000000", "Position": 3}, {"Region": "LCN", "Value": "65.1129054186921", "Name": "Latin America & the Caribbean", "Color": "#000000", "Position": 4}, {"Region": "MEA", "Value": "40.4988228269663", "Name": "Middle East & North Africa", "Color": "#000000", "Position": 5}, {"Region": "SAS", "Value": "30.6349804819207", "Name": "South Asia", "Color": "#000000", "Position": 6}]}, {"Year": "2016", "Data": [{"Region": "EAS", "Value": "20.7303920630287", "Name": "East Asia and the Pacific", "Color": "#000000", "Position": 0}, {"Region": "ECS", "Value": "17.6388596528956", "Name": "Europe & Central Asia", "Color": "#000000", "Position": 1}, {"Region": "NAC", "Value": "20.3731213412371", "Name": "North America", "Color": "#000000", "Position": 2}, {"Region": "SSF", "Value": "104.575840549692", "Name": "Sub-Saharan Africa", "Color": "#000000", "Position": 3}, {"Region": "LCN", "Value": "64.0671852799992", "Name": "Latin America & the Caribbean", "Color": "#000000", "Position": 4}, {"Region": "MEA", "Value": "40.2426989322918", "Name": "Middle East & North Africa", "Color": "#000000", "Position": 5}, {"Region": "SAS", "Value": "28.1174953037681", "Name": "South Asia", "Color": "#000000", "Position": 6}]}, {"Year": "2017", "Data": [{"Region": "EAS", "Value": "20.6689835926567", "Name": "East Asia and the Pacific", "Color": "#000000", "Position": 0}, {"Region": "ECS", "Value": "17.0886924276063", "Name": "Europe & Central Asia", "Color": "#000000", "Position": 1}, {"Region": "NAC", "Value": "18.8554418232832", "Name": "North America", "Color": "#000000", "Position": 2}, {"Region": "SSF", "Value": "102.788585175762", "Name": "Sub-Saharan Africa", "Color": "#000000", "Position": 3}, {"Region": "LCN", "Value": "63.0300016489983", "Name": "Latin America & the Caribbean", "Color": "#000000", "Position": 4}, {"Region": "MEA", "Value": "39.9706780005772", "Name": "Middle East & North Africa", "Color": "#000000", "Position": 5}, {"Region": "SAS", "Value": "25.584972419587", "Name": "South Asia", "Color": "#000000", "Position": 6}]}, {"Year": "2018", "Data": [{"Region": "EAS", "Value": "20.6900901276043", "Name": "East Asia and the Pacific", "Color": "#000000", "Position": 0}, {"Region": "ECS", "Value": "16.6254477998961", "Name": "Europe & Central Asia", "Color": "#000000", "Position": 1}, {"Region": "NAC", "Value": "17.6419501986564", "Name": "North America", "Color": "#000000", "Position": 2}, {"Region": "SSF", "Value": "101.220225106526", "Name": "Sub-Saharan Africa", "Color": "#000000", "Position": 3}, {"Region": "LCN", "Value": "62.0981418807705", "Name": "Latin America & the Caribbean", "Color": "#000000", "Position": 4}, {"Region": "MEA", "Value": "39.7044596608902", "Name": "Middle East & North Africa", "Color": "#000000", "Position": 5}, {"Region": "SAS", "Value": "24.5230468897055", "Name": "South Asia", "Color": "#000000", "Position": 6}]}]
 
 
   on_new_data_load(raw_json_data[0])
+
+
+  // //Function to render story if needed
+  // function renderStory(data) {
+  //   console.log(data)
+  //   let story = `In ${data.Year} ...`;
+  //   d3.select("#small_story").html(story)
+  // }
 
   var loop_counter = 0;
 
@@ -86,12 +107,16 @@ function initiateRadialChart() {
           loop_counter = 0;
         }
 
+        //Call render story
+        // renderStory(raw_json_data[loop_counter])
+
+
         change(raw_json_data[loop_counter])
 
         playLoop();
       }
       // Speed of loop in milliseconds
-    }, 1000)
+    }, speed)
   }
 
   function stopLoop() {
@@ -109,13 +134,12 @@ function initiateRadialChart() {
       .attr("y", 0 - (margin.top / 2))
       .attr("text-anchor", "middle")  
       .style("font-size", "25px") 
-      .style("fill", '#808080')
+      .style("fill", '#000000')
       // .style("text-decoration")  
       .text(load_data.Year);
       
     
     data = data.sort(function(a, b) {
-      
       return parseInt(a.Value) > parseInt(b.Value);
     });
     
@@ -123,10 +147,6 @@ function initiateRadialChart() {
     x.domain(data.map(function(d) {
       return d.Region;
     }));
-    // console.log(data.map(function(d) {
-    //   return d.Region;
-    // }))
-    // x.domain(["ECS", "LCN", "MEA", "NAC", "SAS", "EAS", "SSF"])
 
     y.domain([0, 140])
           
@@ -170,7 +190,7 @@ function initiateRadialChart() {
       .attr("y", function(d) {
         return Math.sin(x(d.Region) + Math.PI / 2) * (radius + radiusTextSpacing);
       })
-      .attr("dy", "0.35em")
+      .attr("dy", "0.30em")
       .style("fill", function(d) {
         return d.Color;
       })
@@ -182,8 +202,11 @@ function initiateRadialChart() {
     
     runs = center.append("g");
     
+    append_base_path(load_data)
+    
     runs.append("path")
       .datum(data)
+      .attr("id", "runs-path")
       .attr("class", "runs")
       .attr("d", areaRuns)
       .attr("transform", "rotate(180)")
@@ -214,32 +237,19 @@ function initiateRadialChart() {
     
     hoverCirclesRuns.selectAll("circle")
       .data(data)
-    .enter().append("circle")
+      .enter().append("circle")
       .attr("class", "hover-dot")	
       .attr("cy", function(d) {
-        return y(Math.round(d.Value));
+        return y(d.Value);
       })
-      .attr("r", dotRadius * 3)
+      .attr("r", dotRadius * 4)
       .attr("transform", function(d) {
         return "rotate(" + (x(d.Region)) / fullCircle * 360 + ")";
       })
       .on("mouseover", function(d) {
         var multiplier = y(Math.round(d.Value)) 
         var unit = "avg";
-        var labelText = d.Value + " births per 1,000 teenagers"
-        
-
-        // Popup over points 
-        // var mouseOverRect = d3.select(this.parentNode).append("rect")
-        //   .attr("x", function() {
-        //     return Math.cos(x(d.Region) + Math.PI / 2) * multiplier;
-        //   })
-        //   .attr("y", function() {
-        //     return Math.sin(x(d.Region) + Math.PI / 2) * multiplier;
-        //   })
-        //   .attr("width", "240px")
-        //   .attr("height", "240px")
-        //   .style("fill", "white");
+        var labelText = (Math.round(d.Value)).toString() + " births per 1,000 teenagers" 
 
         
           d3.select(this.parentNode).append("text")
@@ -251,6 +261,8 @@ function initiateRadialChart() {
             return Math.sin(x(d.Region) + Math.PI / 2) * multiplier;
           })
           .attr("dy", "-1em")
+          .style("fill", "#000000")
+          .style("font-size", "small")
           .attr("text-anchor", "middle")
           .text(labelText);
 
@@ -261,17 +273,58 @@ function initiateRadialChart() {
         // d3.select(this.parentNode).select("rect").remove();
       });
   }
-    
+  
+  function append_base_path(load_data) {
+    var data = load_data.Data
+    runs.append("path")
+      .datum(data)
+      .style("fill", "none")
+      .style("stroke-width", "1px")
+      .style("stroke", "#000000")
+      .attr("id", "base-runs-path")
+      .attr("d", areaRuns)
+      .attr("transform", "rotate(180)");
+
+
+      // Create Label for 2010
+      var base_runs_path = d3.select("#base-runs-path")
+      var pathEl = base_runs_path.node();
+      var BBox = pathEl.getBBox();
+
+      runs
+        .append("text")
+        .attr("fill", "#000000")
+        .attr('x', BBox.x)
+        .attr('y', BBox.y)
+        .attr('width', BBox.width)
+        .attr('height', BBox.height)
+        .style("text-anchor", "end")
+        .style("font-size", "13px") 
+        .text("2010");
+
+      runs.append("line")
+        .style("fill", "#000000")
+        .style("stroke", "#000000")
+        .style("stroke-width", "1px")
+        .attr("x1", BBox.x + 2)
+        .attr("y1", BBox.y - 5)
+        .attr("x2", BBox.x + 14)
+        .attr("y2", BBox.y - 5);
+        
+
+  }
+
   // Update chart date
   function change(load_data) {
-      var data = load_data.Data
-      
+      var data = load_data.Data;
+
       chart_title
         .transition()
         .duration(1000)
         .text(load_data.Year)
 
-      runs.select("path")
+      runs.select("#runs-path")
+      
       .datum(data)
         .transition()
         .duration(1000)
@@ -279,7 +332,7 @@ function initiateRadialChart() {
           return areaRuns(d);
         })
         .style("fill", function() {
-          return "#00D1D1";
+          return "#bcbddc";
         });
     
       runs.selectAll("circle")
@@ -290,7 +343,7 @@ function initiateRadialChart() {
           return y(d.Value);
         })
         .style("fill", function() {
-          return "#00D1D1";
+          return "#bcbddc";
         });
       
       hoverCirclesRuns
