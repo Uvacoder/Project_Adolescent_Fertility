@@ -1,16 +1,11 @@
 import * as d3 from 'd3'
-import {nest} from 'd3-collection';
+import { nest } from 'd3-collection';
 
-var margin = {
-  top: 50,
-  right: 20,
-  bottom: 30,
-  left: 20
-}
+var margin = {top: 30, right: 20, bottom: 30, left: 50}
 
-let height = 700 - margin.top - margin.bottom
+let height = 500 - margin.top - margin.bottom
 
-let width = 1000 - margin.left - margin.right
+let width = 940 - margin.left - margin.right
 
 let svg = d3
   .select('#chart-4')
@@ -19,16 +14,10 @@ let svg = d3
   .attr('width', width + margin.left + margin.right)
   .append('g')
   .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
-  
-var radiusScale = d3
-  .scaleSqrt()
-  .domain([0, 5000])
-  .range([2, 100])
 
-var colorScale = d3
-  .scaleSqrt()
-  .domain([0, 300])
-  .range(['#E5D4F3', '#b379ce'])
+var radiusScale = d3.scaleSqrt().domain([0, 2000]).range([2, 100])
+
+var colorScale = d3.scaleSqrt().domain([0, 200]).range(['#f2f0f7', '#b379ce'])
 
 var div = d3
   .select('body')
@@ -49,9 +38,9 @@ var forceXSeparate = d3
     } else if (d.Region === 'Europe & Central Asia') {
       return 480
     } else if (d.Region === 'East Asia & Pacific') {
-      return 280
-    } else if (d.Region === 'Sub-Saharan Africa') {
       return 700
+    } else if (d.Region === 'Sub-Saharan Africa') {
+      return 280
     }
   })
   .strength(0.1)
@@ -59,25 +48,25 @@ var forceXSeparate = d3
 var forceYSeparate = d3
   .forceY(function (d) {
     if (d.Region === 'North America') {
-      return 200
+      return 500
     } else if (d.Region === 'South Asia') {
-      return 200
+      return 500
     } else if (d.Region === 'Latin America & Caribbean') {
       return 500
     } else if (d.Region === 'Middle East & North Africa') {
       return 200
     } else if (d.Region === 'Europe & Central Asia') {
-      return 200
-    } else if (d.Region === 'East Asia & Pacific') {
-      return 200
-    } else if (d.Region === 'Sub-Saharan Africa') {
       return 500
+    } else if (d.Region === 'East Asia & Pacific') {
+      return 500
+    } else if (d.Region === 'Sub-Saharan Africa') {
+      return 200
     }
   })
   .strength(0.1)
 
-var forceXCombine = d3.forceX(width / 2).strength(0.08)
-var forceYCombine = d3.forceY(height / 2).strength(0.08)
+var forceXCombine = d3.forceX(width / 2).strength(0.03)
+var forceYCombine = d3.forceY(height / 2).strength(0.03)
 
 var forceCollide = d3
   .forceCollide((d) => radiusScale(d.Adolescent_Fertility_Rate) + 5)
@@ -96,10 +85,8 @@ d3.csv(require('./data/allcontinentdata.csv'))
   .catch((err) => console.log('Failed on', err))
 
 function ready(datapoints) {
-  // console.log(datapoints)22
 
   datapoints.forEach((d) => {
-    // console.log(d)
     d.Adolescent_Fertility_Rate = +d.Adolescent_Fertility_Rate
   })
 
@@ -108,59 +95,31 @@ function ready(datapoints) {
       return d.Region
     })
     .entries(datapoints)
-    console.log('nested data look like', nested)
+
 
 
   // make a list of Arab spring countries
   var arabSpring = [
-    'Angola',
-    'Benin',
-    'Botswana',
-    'Burkina Faso',
-    'Burundi',
-    'Cameroon',
-    'Cape Verde',
-    'Central African Republic',
-    'Chad',
-    'Comoros',
-    'Democratic Republic of the Congo',
-    'Equatorial Guinea',
-    'Eritrea',
-    'Ethiopia',
-    'Gabon',
-    'Gambia',
-    'Ghana',
-    'Guinea',
-    'Guinea Bissau',
-    'Ivory Coast',
-    'Kenya',
-    'Lesotho',
-    'Liberia',
-    'Madagascar',
-    'Malawi',
-    'Mali',
-    'Mauritania',
-    'Mauritius',
-    'Mozambique',
-    'Namibia',
     'Niger',
-    'Nigeria',
-    'Republic of Congo',
-    'Rwanda',
-    'Sao Tome and Principe',
-    'Senegal',
-    'Seychelles',
-    'Sierra Leone',
-    'Somalia',
-    'South Africa',
-    'South Sudan',
-    'Sudan',
-    'Swaziland',
-    'Togo',
-    'Uganda',
-    'United Republic of Tanzania',
-    'Zambia',
-    'Zimbabwe',
+    'Mali',
+    'Chad',
+    'Liberia',
+    'Mozambique',
+    'Angola',
+    'Equatorial Guinea',
+    'Guinea',
+    'Malawi',
+    'Central African Republic',
+    'Dominican Republic',
+'Venezuela',
+'Nicaragua',
+'Panama',
+'Ecuador',
+'Guyana',
+'Honduras',
+'Paraguay',
+'Guatemala',
+'El Salvador' 
   ]
 
   var topData = [
@@ -174,6 +133,16 @@ function ready(datapoints) {
     'Guinea',
     'Malawi',
     'Central African Republic',
+    'Dominican Republic',
+'Venezuela',
+'Nicaragua',
+'Panama',
+'Ecuador',
+'Guyana',
+'Honduras',
+'Paraguay',
+'Guatemala',
+'El Salvador' 
   ]
 
   var circles = svg
@@ -184,8 +153,7 @@ function ready(datapoints) {
     .attr('r', (d) => radiusScale(d.Adolescent_Fertility_Rate))
     .attr('opacity', 0.95)
     .attr('class', (d) => {
-      // console.log(d.ADMIN.toLowerCase().replace(/[^a-z]*/g, ''))
-      return d.ADMIN.toLowerCase().replace(/[^a-z]*/g, '')
+      return d.ADMIN
     })
     .classed('countries', true)
     .attr('id', function (d, i) {
@@ -216,7 +184,7 @@ function ready(datapoints) {
     .attr('fill', (d) => colorScale(d.Adolescent_Fertility_Rate))
     .on('mousemove', function (d) {
       div
-        .html(d.ADMIN + '<br>' + d.Adolescent_Fertility_Rate.toLocaleString())
+        .html(d.ADMIN + '<br>' + d.Adolescent_Fertility_Rate)
         .style('left', d3.event.pageX + 'px')
         .style('top', d3.event.pageY - 28 + 'px')
         .style('display', 'block')
@@ -224,91 +192,89 @@ function ready(datapoints) {
     .on('mouseover', function (d, i) {
       div.transition().style('opacity', 0.9)
       div
-        .html(d.ADMIN + '<br>' + d.Adolescent_Fertility_Rate.toLocaleString())
+        .html(d.ADMIN + '<br>' + d.Adolescent_Fertility_Rate)
         .style('left', d3.event.pageX + 'px')
         .style('top', d3.event.pageY - 28 + 'px')
-      d3.select('#country' + i)
+      d3.select('#ADMIN' + i)
         .transition()
         .style('stroke', 'white')
         .style('stroke-width', 2.5)
     })
     .on('mouseout', function (d, i) {
       div.transition().style('opacity', 0)
-      d3.select('#country' + i)
+      d3.select('#ADMIN' + i)
         .transition()
         .style('stroke', 'none')
         .style('stroke-width', 0)
     })
 
   svg
-    .selectAll('.continent-label')
+    .selectAll('.region-label')
     .data(nested)
     .enter()
     .append('text')
     .text((d) => d.key)
     .attr('font-size', 18)
     .attr('font-weight', 500)
-    .attr('class', 'continent-label')
+    .attr('class', 'region-label')
     .attr('x', function (d) {
-      if (d.Region === 'North America') {
+      if (d.key === 'North America') {
         return 250
-      } else if (d.Region === 'South Asia') {
+      } else if (d.key === 'South Asia') {
         return 500
-      } else if (d.Region === 'Latin America & Caribbean') {
+      } else if (d.key === 'Latin America & Caribbean') {
         return 750
-      } else if (d.Region === 'Middle East & North Africa') {
-        return 250
-      } else if (d.Region === 'Europe & Central Asia') {
+      } else if (d.key === 'Middle East & North Africa') {
+        return 230
+      } else if (d.key === 'Europe & Central Asia') {
         return 500
-      } else if (d.Region === 'East Asia & Pacific') {
+      } else if (d.key === 'East Asia & Pacific') {
         return 750
-      } else if (d.Region === 'Sub-Saharan Africa') {
-        return 250
+      } else if (d.key === 'Sub-Saharan Africa') {
+        return 200
       }
     })
     .attr('y', function (d) {
-      if (d.Region === 'North America') {
+      if (d.key === 'North America') {
+        return 450
+      } else if (d.key === 'South Asia') {
+        return 450
+      } else if (d.key === 'Latin America & Caribbean') {
         return 0
-      } else if (d.Region === 'South Asia') {
+      } else if (d.key === 'Middle East & North Africa') {
         return 0
-      } else if (d.Region === 'Latin America & Caribbean') {
-        return 0
-      } else if (d.Region === 'Middle East & North Africa') {
-        return 0
-      } else if (d.Region === 'Europe & Central Asia') {
-        return 0
-      } else if (d.Region === 'East Asia & Pacific') {
-        return 0
-      } else if (d.Region === 'Sub-Saharan Africa') {
+      } else if (d.key === 'Europe & Central Asia') {
+        return 450
+      } else if (d.key === 'East Asia & Pacific') {
+        return 450
+      } else if (d.key === 'Sub-Saharan Africa') {
         return 0
       }
     })
-    .attr('fill', 'black')
+    .attr('fill', '#000000')
     .attr('text-anchor', 'middle')
     .attr('opacity', 0.7)
     .attr('visibility', 'hidden')
 
   // add text-label on each circle
   var nodeText = svg
-    .selectAll('.countries-label')
+    .selectAll('.ADMIN-label')
     .data(datapoints)
     .enter()
     .append('text')
-    .attr('class', 'countries-label')
+    .attr('class', 'ADMIN-label')
     .text(function (d) {
-      return d.ADMIN + '\n' + d.Adolescent_Fertility_Rate.toLocaleString()
+      return d.ADMIN
     })
     .attr('text-anchor', 'middle')
-    .attr('font-size', 11)
-    .attr('fill', 'white')
+    .attr('font-size', 10)
+    .attr('fill', '#000000')
     .classed('niger-label', (d) => {
-      // console.log(d)
       if (d.ADMIN === 'Niger') {
         return true
       }
     })
     .classed('mali-label', (d) => {
-      // console.log(d)
       if (d.ADMIN === 'Mali') {
         return true
       }
@@ -352,12 +318,12 @@ function ready(datapoints) {
     .text('legend')
     .attr('x', 300)
     .attr('y', 200)
-    .attr('fill', 'white')
+    .attr('fill', 'black')
     .attr('text-anchor', 'middle')
 
   d3.select('#origin').on('stepin', () => {
     svg.selectAll('.countries').attr('fill', d => colorScale(d.Adolescent_Fertility_Rate))
-    svg.selectAll('.countries-label').style('visibility', 'hidden')
+    svg.selectAll('.ADMIN-label').style('visibility', 'hidden')
     simulation
       .force('x', forceXCombine)
       .force('y', forceYCombine)
@@ -383,13 +349,12 @@ function ready(datapoints) {
       .style('visibility', 'visible')
       .transition()
 
-    svg.selectAll('.continent-label').transition().style('visibility', 'hidden')
+    svg.selectAll('.region-label').transition().style('visibility', 'hidden')
 
     svg.selectAll('.niger-label').style('visibility', 'visible')
     simulation
       .force('x', forceXCombine)
       .force('y', forceYCombine)
-      // .force('charge', d3.forceManyBody().strength(-15))
       .alphaTarget(0.25)
       .restart()
   })
@@ -402,13 +367,13 @@ function ready(datapoints) {
       .transition()
       .attr('fill', (d) => colorScale(d.Adolescent_Fertility_Rate))
     svg.selectAll('.arab-spring').transition().attr('fill', '#f7545d')
-    svg.selectAll('.countries-label').transition().style('visibility', 'hidden')
+    svg.selectAll('.ADMIN-label').transition().style('visibility', 'hidden')
     svg
       .selectAll('.arab-spring-label')
       .transition()
       .style('visibility', 'visible')
 
-    svg.selectAll('.continent-label').transition().style('visibility', 'hidden')
+    svg.selectAll('.region-label').transition().style('visibility', 'hidden')
 
     simulation
       .force('x', forceXCombine)
@@ -424,10 +389,10 @@ function ready(datapoints) {
       .selectAll('.countries')
       .transition()
       .attr('fill', (d) => colorScale(d.Adolescent_Fertility_Rate))
-    svg.selectAll('.countries-label').style('visibility', 'hidden')
+    svg.selectAll('.ADMIN-label').style('visibility', 'hidden')
 
     svg
-      .selectAll('.continent-label')
+      .selectAll('.region-label')
       .transition()
       .style('visibility', 'visible')
 
@@ -439,7 +404,7 @@ function ready(datapoints) {
       .restart()
   })
 
-  // scroll to show top ten countries in different continent
+  // scroll to show top ten countries in different regions
   d3.select('#split-highlight').on('stepin', () => {
     svg
       .selectAll('.countries')

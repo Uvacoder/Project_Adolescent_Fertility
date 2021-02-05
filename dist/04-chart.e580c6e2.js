@@ -31277,16 +31277,16 @@ function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 var margin = {
-  top: 50,
+  top: 30,
   right: 20,
   bottom: 30,
-  left: 20
+  left: 50
 };
-var height = 700 - margin.top - margin.bottom;
-var width = 1000 - margin.left - margin.right;
+var height = 500 - margin.top - margin.bottom;
+var width = 940 - margin.left - margin.right;
 var svg = d3.select('#chart-4').append('svg').attr('height', height + margin.top + margin.bottom).attr('width', width + margin.left + margin.right).append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-var radiusScale = d3.scaleSqrt().domain([0, 5000]).range([2, 100]);
-var colorScale = d3.scaleSqrt().domain([0, 300]).range(['#E5D4F3', '#b379ce']);
+var radiusScale = d3.scaleSqrt().domain([0, 2000]).range([2, 100]);
+var colorScale = d3.scaleSqrt().domain([0, 200]).range(['#f2f0f7', '#b379ce']);
 var div = d3.select('body').append('div').attr('class', 'tooltip').style('opacity', 0);
 var forceXSeparate = d3.forceX(function (d) {
   if (d.Region === 'North America') {
@@ -31300,30 +31300,30 @@ var forceXSeparate = d3.forceX(function (d) {
   } else if (d.Region === 'Europe & Central Asia') {
     return 480;
   } else if (d.Region === 'East Asia & Pacific') {
-    return 280;
-  } else if (d.Region === 'Sub-Saharan Africa') {
     return 700;
+  } else if (d.Region === 'Sub-Saharan Africa') {
+    return 280;
   }
 }).strength(0.1);
 var forceYSeparate = d3.forceY(function (d) {
   if (d.Region === 'North America') {
-    return 200;
+    return 500;
   } else if (d.Region === 'South Asia') {
-    return 200;
+    return 500;
   } else if (d.Region === 'Latin America & Caribbean') {
     return 500;
   } else if (d.Region === 'Middle East & North Africa') {
     return 200;
   } else if (d.Region === 'Europe & Central Asia') {
-    return 200;
-  } else if (d.Region === 'East Asia & Pacific') {
-    return 200;
-  } else if (d.Region === 'Sub-Saharan Africa') {
     return 500;
+  } else if (d.Region === 'East Asia & Pacific') {
+    return 500;
+  } else if (d.Region === 'Sub-Saharan Africa') {
+    return 200;
   }
 }).strength(0.1);
-var forceXCombine = d3.forceX(width / 2).strength(0.08);
-var forceYCombine = d3.forceY(height / 2).strength(0.08);
+var forceXCombine = d3.forceX(width / 2).strength(0.03);
+var forceYCombine = d3.forceY(height / 2).strength(0.03);
 var forceCollide = d3.forceCollide(function (d) {
   return radiusScale(d.Adolescent_Fertility_Rate) + 5;
 }).strength(1);
@@ -31334,23 +31334,19 @@ d3.csv(require('./data/allcontinentdata.csv')).then(ready).catch(function (err) 
 });
 
 function ready(datapoints) {
-  // console.log(datapoints)22
   datapoints.forEach(function (d) {
-    // console.log(d)
     d.Adolescent_Fertility_Rate = +d.Adolescent_Fertility_Rate;
   });
   var nested = (0, _d3Collection.nest)().key(function (d) {
     return d.Region;
-  }).entries(datapoints);
-  console.log('nested data look like', nested); // make a list of Arab spring countries
+  }).entries(datapoints); // make a list of Arab spring countries
 
-  var arabSpring = ['Angola', 'Benin', 'Botswana', 'Burkina Faso', 'Burundi', 'Cameroon', 'Cape Verde', 'Central African Republic', 'Chad', 'Comoros', 'Democratic Republic of the Congo', 'Equatorial Guinea', 'Eritrea', 'Ethiopia', 'Gabon', 'Gambia', 'Ghana', 'Guinea', 'Guinea Bissau', 'Ivory Coast', 'Kenya', 'Lesotho', 'Liberia', 'Madagascar', 'Malawi', 'Mali', 'Mauritania', 'Mauritius', 'Mozambique', 'Namibia', 'Niger', 'Nigeria', 'Republic of Congo', 'Rwanda', 'Sao Tome and Principe', 'Senegal', 'Seychelles', 'Sierra Leone', 'Somalia', 'South Africa', 'South Sudan', 'Sudan', 'Swaziland', 'Togo', 'Uganda', 'United Republic of Tanzania', 'Zambia', 'Zimbabwe'];
-  var topData = ['Niger', 'Mali', 'Chad', 'Liberia', 'Mozambique', 'Angola', 'Equatorial Guinea', 'Guinea', 'Malawi', 'Central African Republic'];
+  var arabSpring = ['Niger', 'Mali', 'Chad', 'Liberia', 'Mozambique', 'Angola', 'Equatorial Guinea', 'Guinea', 'Malawi', 'Central African Republic', 'Dominican Republic', 'Venezuela', 'Nicaragua', 'Panama', 'Ecuador', 'Guyana', 'Honduras', 'Paraguay', 'Guatemala', 'El Salvador'];
+  var topData = ['Niger', 'Mali', 'Chad', 'Liberia', 'Mozambique', 'Angola', 'Equatorial Guinea', 'Guinea', 'Malawi', 'Central African Republic', 'Dominican Republic', 'Venezuela', 'Nicaragua', 'Panama', 'Ecuador', 'Guyana', 'Honduras', 'Paraguay', 'Guatemala', 'El Salvador'];
   var circles = svg.selectAll('.countries').data(datapoints).enter().append('circle').attr('r', function (d) {
     return radiusScale(d.Adolescent_Fertility_Rate);
   }).attr('opacity', 0.95).attr('class', function (d) {
-    // console.log(d.ADMIN.toLowerCase().replace(/[^a-z]*/g, ''))
-    return d.ADMIN.toLowerCase().replace(/[^a-z]*/g, '');
+    return d.ADMIN;
   }).classed('countries', true).attr('id', function (d, i) {
     return 'country' + i;
   }).classed('niger', function (d) {
@@ -31374,60 +31370,58 @@ function ready(datapoints) {
   }).attr('fill', function (d) {
     return colorScale(d.Adolescent_Fertility_Rate);
   }).on('mousemove', function (d) {
-    div.html(d.ADMIN + '<br>' + d.Adolescent_Fertility_Rate.toLocaleString()).style('left', d3.event.pageX + 'px').style('top', d3.event.pageY - 28 + 'px').style('display', 'block');
+    div.html(d.ADMIN + '<br>' + d.Adolescent_Fertility_Rate).style('left', d3.event.pageX + 'px').style('top', d3.event.pageY - 28 + 'px').style('display', 'block');
   }).on('mouseover', function (d, i) {
     div.transition().style('opacity', 0.9);
-    div.html(d.ADMIN + '<br>' + d.Adolescent_Fertility_Rate.toLocaleString()).style('left', d3.event.pageX + 'px').style('top', d3.event.pageY - 28 + 'px');
-    d3.select('#country' + i).transition().style('stroke', 'white').style('stroke-width', 2.5);
+    div.html(d.ADMIN + '<br>' + d.Adolescent_Fertility_Rate).style('left', d3.event.pageX + 'px').style('top', d3.event.pageY - 28 + 'px');
+    d3.select('#ADMIN' + i).transition().style('stroke', 'white').style('stroke-width', 2.5);
   }).on('mouseout', function (d, i) {
     div.transition().style('opacity', 0);
-    d3.select('#country' + i).transition().style('stroke', 'none').style('stroke-width', 0);
+    d3.select('#ADMIN' + i).transition().style('stroke', 'none').style('stroke-width', 0);
   });
-  svg.selectAll('.continent-label').data(nested).enter().append('text').text(function (d) {
+  svg.selectAll('.region-label').data(nested).enter().append('text').text(function (d) {
     return d.key;
-  }).attr('font-size', 18).attr('font-weight', 500).attr('class', 'continent-label').attr('x', function (d) {
-    if (d.Region === 'North America') {
+  }).attr('font-size', 18).attr('font-weight', 500).attr('class', 'region-label').attr('x', function (d) {
+    if (d.key === 'North America') {
       return 250;
-    } else if (d.Region === 'South Asia') {
+    } else if (d.key === 'South Asia') {
       return 500;
-    } else if (d.Region === 'Latin America & Caribbean') {
+    } else if (d.key === 'Latin America & Caribbean') {
       return 750;
-    } else if (d.Region === 'Middle East & North Africa') {
-      return 250;
-    } else if (d.Region === 'Europe & Central Asia') {
+    } else if (d.key === 'Middle East & North Africa') {
+      return 230;
+    } else if (d.key === 'Europe & Central Asia') {
       return 500;
-    } else if (d.Region === 'East Asia & Pacific') {
+    } else if (d.key === 'East Asia & Pacific') {
       return 750;
-    } else if (d.Region === 'Sub-Saharan Africa') {
-      return 250;
+    } else if (d.key === 'Sub-Saharan Africa') {
+      return 200;
     }
   }).attr('y', function (d) {
-    if (d.Region === 'North America') {
+    if (d.key === 'North America') {
+      return 450;
+    } else if (d.key === 'South Asia') {
+      return 450;
+    } else if (d.key === 'Latin America & Caribbean') {
       return 0;
-    } else if (d.Region === 'South Asia') {
+    } else if (d.key === 'Middle East & North Africa') {
       return 0;
-    } else if (d.Region === 'Latin America & Caribbean') {
-      return 0;
-    } else if (d.Region === 'Middle East & North Africa') {
-      return 0;
-    } else if (d.Region === 'Europe & Central Asia') {
-      return 0;
-    } else if (d.Region === 'East Asia & Pacific') {
-      return 0;
-    } else if (d.Region === 'Sub-Saharan Africa') {
+    } else if (d.key === 'Europe & Central Asia') {
+      return 450;
+    } else if (d.key === 'East Asia & Pacific') {
+      return 450;
+    } else if (d.key === 'Sub-Saharan Africa') {
       return 0;
     }
-  }).attr('fill', 'black').attr('text-anchor', 'middle').attr('opacity', 0.7).attr('visibility', 'hidden'); // add text-label on each circle
+  }).attr('fill', '#000000').attr('text-anchor', 'middle').attr('opacity', 0.7).attr('visibility', 'hidden'); // add text-label on each circle
 
-  var nodeText = svg.selectAll('.countries-label').data(datapoints).enter().append('text').attr('class', 'countries-label').text(function (d) {
-    return d.ADMIN + '\n' + d.Adolescent_Fertility_Rate.toLocaleString();
-  }).attr('text-anchor', 'middle').attr('font-size', 11).attr('fill', 'white').classed('niger-label', function (d) {
-    // console.log(d)
+  var nodeText = svg.selectAll('.ADMIN-label').data(datapoints).enter().append('text').attr('class', 'ADMIN-label').text(function (d) {
+    return d.ADMIN;
+  }).attr('text-anchor', 'middle').attr('font-size', 10).attr('fill', '#000000').classed('niger-label', function (d) {
     if (d.ADMIN === 'Niger') {
       return true;
     }
   }).classed('mali-label', function (d) {
-    // console.log(d)
     if (d.ADMIN === 'Mali') {
       return true;
     }
@@ -31457,12 +31451,12 @@ function ready(datapoints) {
     });
   }
 
-  svg.selectAll('.legend-entry').append('text').text('legend').attr('x', 300).attr('y', 200).attr('fill', 'white').attr('text-anchor', 'middle');
+  svg.selectAll('.legend-entry').append('text').text('legend').attr('x', 300).attr('y', 200).attr('fill', 'black').attr('text-anchor', 'middle');
   d3.select('#origin').on('stepin', function () {
     svg.selectAll('.countries').attr('fill', function (d) {
       return colorScale(d.Adolescent_Fertility_Rate);
     });
-    svg.selectAll('.countries-label').style('visibility', 'hidden');
+    svg.selectAll('.ADMIN-label').style('visibility', 'hidden');
     simulation.force('x', forceXCombine).force('y', forceYCombine).alphaTarget(0.25).restart();
   }); // scroll to Asia
 
@@ -31474,10 +31468,9 @@ function ready(datapoints) {
     svg.selectAll('.mali').transition().attr('fill', '#f7545d');
     svg.selectAll('.arab-spring-label').transition().style('visibility', 'hidden');
     svg.selectAll('.mali-label').transition().style('visibility', 'visible').transition();
-    svg.selectAll('.continent-label').transition().style('visibility', 'hidden');
+    svg.selectAll('.region-label').transition().style('visibility', 'hidden');
     svg.selectAll('.niger-label').style('visibility', 'visible');
-    simulation.force('x', forceXCombine).force('y', forceYCombine) // .force('charge', d3.forceManyBody().strength(-15))
-    .alphaTarget(0.25).restart();
+    simulation.force('x', forceXCombine).force('y', forceYCombine).alphaTarget(0.25).restart();
   }); // scroll to Arab spring
 
   d3.select('#arab-spring').on('stepin', function () {
@@ -31486,9 +31479,9 @@ function ready(datapoints) {
       return colorScale(d.Adolescent_Fertility_Rate);
     });
     svg.selectAll('.arab-spring').transition().attr('fill', '#f7545d');
-    svg.selectAll('.countries-label').transition().style('visibility', 'hidden');
+    svg.selectAll('.ADMIN-label').transition().style('visibility', 'hidden');
     svg.selectAll('.arab-spring-label').transition().style('visibility', 'visible');
-    svg.selectAll('.continent-label').transition().style('visibility', 'hidden');
+    svg.selectAll('.region-label').transition().style('visibility', 'hidden');
     simulation.force('x', forceXCombine).force('y', forceYCombine).alphaTarget(0.25).restart();
   }); // scroll to separate bubbles based on continent
 
@@ -31497,11 +31490,11 @@ function ready(datapoints) {
     svg.selectAll('.countries').transition().attr('fill', function (d) {
       return colorScale(d.Adolescent_Fertility_Rate);
     });
-    svg.selectAll('.countries-label').style('visibility', 'hidden');
-    svg.selectAll('.continent-label').transition().style('visibility', 'visible');
+    svg.selectAll('.ADMIN-label').style('visibility', 'hidden');
+    svg.selectAll('.region-label').transition().style('visibility', 'visible');
     simulation.force('x', forceXSeparate).force('y', forceYSeparate) // .force('charge', forceCharge)
     .alphaTarget(0.25).restart();
-  }); // scroll to show top ten countries in different continent
+  }); // scroll to show top ten countries in different regions
 
   d3.select('#split-highlight').on('stepin', function () {
     svg.selectAll('.countries').transition().attr('fill', function (d) {
@@ -31539,7 +31532,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53333" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54668" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
