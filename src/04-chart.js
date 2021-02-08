@@ -15,7 +15,7 @@ let svg = d3
   .append('g')
   .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
 
-var radiusScale = d3.scaleSqrt().domain([0, 10000]).range([2, 100])
+var radiusScale = d3.scaleSqrt().domain([0, 5000]).range([2, 100])
 
 var colorScale = d3.scaleSqrt().domain([0, 300]).range(['#f2f0f7', '#b379ce'])
 
@@ -41,7 +41,7 @@ var forceXSeparate = d3
       return 700
     } else if (d.Region === 'East Asia & Pacific') {
       return 700
-    }
+     }
   })
   .strength(0.1)
 
@@ -52,7 +52,7 @@ var forceYSeparate = d3
     } else if (d.Region === 'South Asia') {
       return 500
     } else if (d.Region === 'Latin America & Caribbean') {
-      return 200
+      return 500
     } else if (d.Region === 'Middle East & North Africa') {
       return 200
     } else if (d.Region === 'Europe & Central Asia') {
@@ -65,8 +65,8 @@ var forceYSeparate = d3
   })
   .strength(0.1)
 
-var forceXCombine = d3.forceX(width / 2).strength(0.03)
-var forceYCombine = d3.forceY(height / 2).strength(0.03)
+var forceXCombine = d3.forceX(width / 2).strength(0.10)
+var forceYCombine = d3.forceY(height / 2).strength(0.10)
 
 var forceCollide = d3
   .forceCollide((d) => radiusScale(d.Adolescent_Fertility_Rate) + 5)
@@ -160,7 +160,7 @@ function ready(datapoints) {
       return 'country' + i
     })
     .classed('niger', (d) => {
-      // console.log(d)
+      console.log(d)
       if (d.ADMIN === 'Niger') {
         return true
       }
@@ -181,10 +181,10 @@ function ready(datapoints) {
         return true
       }
     })
-    .attr('fill', (d) => colorScale(d.Adolescent_Fertility_Rate.toLocaleString()))
+    .attr('fill', (d) => colorScale(d.Adolescent_Fertility_Rate))
     .on('mousemove', function (d) {
       div
-        .html(d.ADMIN + '<br>' + d.Adolescent_Fertility_Rate)
+        .html(d.ADMIN + '<br>' + d.Adolescent_Fertility_Rate.toLocaleString())
         .style('left', d3.event.pageX + 'px')
         .style('top', d3.event.pageY - 28 + 'px')
         .style('display', 'block')
@@ -192,17 +192,17 @@ function ready(datapoints) {
     .on('mouseover', function (d, i) {
       div.transition().style('opacity', 0.9)
       div
-        .html(d.ADMIN + '<br>' + d.Adolescent_Fertility_Rate)
+        .html(d.ADMIN + '<br>' + d.Adolescent_Fertility_Rate.toLocaleString())
         .style('left', d3.event.pageX + 'px')
         .style('top', d3.event.pageY - 28 + 'px')
-      d3.select('#ADMIN' + i)
+      d3.select('#country' + i)
         .transition()
         .style('stroke', 'white')
         .style('stroke-width', 2.5)
     })
     .on('mouseout', function (d, i) {
       div.transition().style('opacity', 0)
-      d3.select('#ADMIN' + i)
+      d3.select('#country' + i)
         .transition()
         .style('stroke', 'none')
         .style('stroke-width', 0)
@@ -351,7 +351,7 @@ function ready(datapoints) {
 
     svg.selectAll('.region-label').transition().style('visibility', 'hidden')
 
-    svg.selectAll('.niger-label').style('visibility', 'visible')
+    svg.selectAll('.niger-label').transition().style('visibility', 'visible')
     simulation
       .force('x', forceXCombine)
       .force('y', forceYCombine)

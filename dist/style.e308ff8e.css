@@ -33,7 +33,7 @@ footer {
   border: none;
   outline: none;
   background-color: #e6e6e6;
-  color: #2B2233;
+  color: #000000;
   cursor: pointer;
   padding: 2px;
   border-radius: 4px;
@@ -112,9 +112,9 @@ em {
 }
 
 font {
-  font-style: italic;
+  /* font-style: italic; */
   font-size: 13px;
-  color: #fafafa;
+  color: #000000;
 }
 
 
@@ -131,8 +131,8 @@ font {
 }
 
 .dotbig {
-  height: 60px;
-  width: 60px;
+  height: 40px;
+  width: 40px;
   background-color: #D0BCE1;
   border-radius: 50%;
   display: inline-block;
@@ -156,14 +156,15 @@ font {
 .colored-text {
   padding: 5px 7px;
   display: inline-block;
-  background: rgb(79, 70, 89);
+  background: rgb(240,248,255);
   color: 'black';
-  font-family: 'Roboto', serif;
-  margin-right: 10px;
+  font-family: 'Source Sans Pro', sans-serif;
+  /* margin-right: 10px;
   margin-left: 10px;
   padding-right: 10px;
-  padding-left: 10px;
-
+  padding-left: 10px; */
+  justify-content: center;
+  text-align: center;
 }
 
 
@@ -186,11 +187,11 @@ img.block {
 }
 
 .x-axis text {
-  fill: white;
+  fill: black;
 }
 
 .y-axis text {
-  fill: white;
+  fill: black;
 }
 
 .graticule {

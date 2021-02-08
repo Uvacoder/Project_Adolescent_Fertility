@@ -31285,7 +31285,7 @@ var margin = {
 var height = 700 - margin.top - margin.bottom;
 var width = 1000 - margin.left - margin.right;
 var svg = d3.select('#chart-4').append('svg').attr('height', height + margin.top + margin.bottom).attr('width', width + margin.left + margin.right).append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-var radiusScale = d3.scaleSqrt().domain([0, 10000]).range([2, 100]);
+var radiusScale = d3.scaleSqrt().domain([0, 5000]).range([2, 100]);
 var colorScale = d3.scaleSqrt().domain([0, 300]).range(['#f2f0f7', '#b379ce']);
 var div = d3.select('body').append('div').attr('class', 'tooltip').style('opacity', 0);
 var forceXSeparate = d3.forceX(function (d) {
@@ -31311,7 +31311,7 @@ var forceYSeparate = d3.forceY(function (d) {
   } else if (d.Region === 'South Asia') {
     return 500;
   } else if (d.Region === 'Latin America & Caribbean') {
-    return 200;
+    return 500;
   } else if (d.Region === 'Middle East & North Africa') {
     return 200;
   } else if (d.Region === 'Europe & Central Asia') {
@@ -31322,8 +31322,8 @@ var forceYSeparate = d3.forceY(function (d) {
     return 200;
   }
 }).strength(0.1);
-var forceXCombine = d3.forceX(width / 2).strength(0.03);
-var forceYCombine = d3.forceY(height / 2).strength(0.03);
+var forceXCombine = d3.forceX(width / 2).strength(0.10);
+var forceYCombine = d3.forceY(height / 2).strength(0.10);
 var forceCollide = d3.forceCollide(function (d) {
   return radiusScale(d.Adolescent_Fertility_Rate) + 5;
 }).strength(1);
@@ -31350,7 +31350,8 @@ function ready(datapoints) {
   }).classed('countries', true).attr('id', function (d, i) {
     return 'country' + i;
   }).classed('niger', function (d) {
-    // console.log(d)
+    console.log(d);
+
     if (d.ADMIN === 'Niger') {
       return true;
     }
@@ -31368,16 +31369,16 @@ function ready(datapoints) {
       return true;
     }
   }).attr('fill', function (d) {
-    return colorScale(d.Adolescent_Fertility_Rate.toLocaleString());
+    return colorScale(d.Adolescent_Fertility_Rate);
   }).on('mousemove', function (d) {
-    div.html(d.ADMIN + '<br>' + d.Adolescent_Fertility_Rate).style('left', d3.event.pageX + 'px').style('top', d3.event.pageY - 28 + 'px').style('display', 'block');
+    div.html(d.ADMIN + '<br>' + d.Adolescent_Fertility_Rate.toLocaleString()).style('left', d3.event.pageX + 'px').style('top', d3.event.pageY - 28 + 'px').style('display', 'block');
   }).on('mouseover', function (d, i) {
     div.transition().style('opacity', 0.9);
-    div.html(d.ADMIN + '<br>' + d.Adolescent_Fertility_Rate).style('left', d3.event.pageX + 'px').style('top', d3.event.pageY - 28 + 'px');
-    d3.select('#ADMIN' + i).transition().style('stroke', 'white').style('stroke-width', 2.5);
+    div.html(d.ADMIN + '<br>' + d.Adolescent_Fertility_Rate.toLocaleString()).style('left', d3.event.pageX + 'px').style('top', d3.event.pageY - 28 + 'px');
+    d3.select('#country' + i).transition().style('stroke', 'white').style('stroke-width', 2.5);
   }).on('mouseout', function (d, i) {
     div.transition().style('opacity', 0);
-    d3.select('#ADMIN' + i).transition().style('stroke', 'none').style('stroke-width', 0);
+    d3.select('#country' + i).transition().style('stroke', 'none').style('stroke-width', 0);
   });
   svg.selectAll('.region-label').data(nested).enter().append('text').text(function (d) {
     return d.key;
@@ -31469,7 +31470,7 @@ function ready(datapoints) {
     svg.selectAll('.arab-spring-label').transition().style('visibility', 'hidden');
     svg.selectAll('.mali-label').transition().style('visibility', 'visible').transition();
     svg.selectAll('.region-label').transition().style('visibility', 'hidden');
-    svg.selectAll('.niger-label').style('visibility', 'visible');
+    svg.selectAll('.niger-label').transition().style('visibility', 'visible');
     simulation.force('x', forceXCombine).force('y', forceYCombine).alphaTarget(0.25).restart();
   }); // scroll to Arab spring
 
