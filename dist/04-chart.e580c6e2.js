@@ -31385,13 +31385,13 @@ function ready(datapoints) {
     return d.key;
   }).attr('font-size', 18).attr('font-weight', 500).attr('class', 'region-label').attr('x', function (d) {
     if (d.key === 'North America') {
-      return 250;
+      return 200;
     } else if (d.key === 'South Asia') {
-      return 500;
+      return 50;
     } else if (d.key === 'Latin America & Caribbean') {
       return 750;
     } else if (d.key === 'Middle East & North Africa') {
-      return 230;
+      return 100;
     } else if (d.key === 'Europe & Central Asia') {
       return 500;
     } else if (d.key === 'East Asia & Pacific') {
