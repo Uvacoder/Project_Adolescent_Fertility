@@ -160,7 +160,7 @@ function ready(datapoints) {
       return 'country' + i
     })
     .classed('niger', (d) => {
-      console.log(d)
+      // console.log(d)
       if (d.ADMIN === 'Niger') {
         return true
       }
@@ -181,26 +181,35 @@ function ready(datapoints) {
         return true
       }
     })
-    .attr('fill', (d) => colorScale(d.Adolescent_Fertility_Rate))
-    .on('mousemove', function (d) {
+    .attr('fill', d => colorScale(d.Adolescent_Fertility_Rate))
+    .on('mousemove', function(d, i) {
       div
-        .html(d.ADMIN + '<br>' + d.Adolescent_Fertility_Rate.toLocaleString())
-        .style('left', d3.event.pageX + 'px')
-        .style('top', d3.event.pageY - 28 + 'px')
+        .html(i.ADMIN + '<br>' + convertToLocaleString(i.Adolescent_Fertility_Rate))//.toLocaleString())
+        .style('left', d.pageX + 'px')
+        .style('top', d.pageY - 28 + 'px')
         .style('display', 'block')
+        .attr("dy", "-1em")
+        .style("fill", "#000000")
+        .style("font-size", "small")
+        .attr("text-anchor", "middle")
     })
-    .on('mouseover', function (d, i) {
+    .on('mouseover', function(d, i) {
       div.transition().style('opacity', 0.9)
       div
-        .html(d.ADMIN + '<br>' + d.Adolescent_Fertility_Rate.toLocaleString())
-        .style('left', d3.event.pageX + 'px')
-        .style('top', d3.event.pageY - 28 + 'px')
+        .html(i.ADMIN + '<br>' + convertToLocaleString(i.Adolescent_Fertility_Rate)) //.toLocaleString())
+        .style('left', d.pageX + 'px')
+        .style('top', d.pageY - 28 + 'px')
+        .attr("dy", "-1em")
+        .style("fill", "#000000")
+        .style("font-size", "small")
+        .attr("text-anchor", "middle")
+
       d3.select('#country' + i)
         .transition()
         .style('stroke', 'white')
         .style('stroke-width', 2.5)
     })
-    .on('mouseout', function (d, i) {
+    .on('mouseout', function(d, i) {
       div.transition().style('opacity', 0)
       d3.select('#country' + i)
         .transition()
