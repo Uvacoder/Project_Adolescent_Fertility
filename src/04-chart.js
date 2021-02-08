@@ -1,11 +1,11 @@
 import * as d3 from 'd3'
 import { nest } from 'd3-collection';
 
-var margin = {top: 30, right: 20, bottom: 30, left: 50}
+var margin = {top: 50, right: 20, bottom: 30, left: 20}
 
-let height = 500 - margin.top - margin.bottom
+let height = 700 - margin.top - margin.bottom
 
-let width = 940 - margin.left - margin.right
+let width = 1000 - margin.left - margin.right
 
 let svg = d3
   .select('#chart-4')
@@ -15,9 +15,9 @@ let svg = d3
   .append('g')
   .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
 
-var radiusScale = d3.scaleSqrt().domain([0, 2000]).range([2, 100])
+var radiusScale = d3.scaleSqrt().domain([0, 10000]).range([2, 100])
 
-var colorScale = d3.scaleSqrt().domain([0, 200]).range(['#f2f0f7', '#b379ce'])
+var colorScale = d3.scaleSqrt().domain([0, 300]).range(['#f2f0f7', '#b379ce'])
 
 var div = d3
   .select('body')
@@ -27,20 +27,20 @@ var div = d3
 
 var forceXSeparate = d3
   .forceX(function (d) {
-    if (d.Region === 'North America') {
+    if (d.Region === 'Sub-Saharan Africa') {
+      return 280
+    } else if (d.Region === 'Latin America & Caribbean') {
+      return 480
+    } else if (d.Region === 'Middle East & North Africa') {
+      return 700
+    } else if (d.Region === 'North America') {
       return 280
     } else if (d.Region === 'South Asia') {
       return 480
-    } else if (d.Region === 'Latin America & Caribbean') {
-      return 700
-    } else if (d.Region === 'Middle East & North Africa') {
-      return 280
     } else if (d.Region === 'Europe & Central Asia') {
-      return 480
+      return 700
     } else if (d.Region === 'East Asia & Pacific') {
       return 700
-    } else if (d.Region === 'Sub-Saharan Africa') {
-      return 280
     }
   })
   .strength(0.1)
@@ -52,7 +52,7 @@ var forceYSeparate = d3
     } else if (d.Region === 'South Asia') {
       return 500
     } else if (d.Region === 'Latin America & Caribbean') {
-      return 500
+      return 200
     } else if (d.Region === 'Middle East & North Africa') {
       return 200
     } else if (d.Region === 'Europe & Central Asia') {
@@ -181,7 +181,7 @@ function ready(datapoints) {
         return true
       }
     })
-    .attr('fill', (d) => colorScale(d.Adolescent_Fertility_Rate))
+    .attr('fill', (d) => colorScale(d.Adolescent_Fertility_Rate.toLocaleString()))
     .on('mousemove', function (d) {
       div
         .html(d.ADMIN + '<br>' + d.Adolescent_Fertility_Rate)
