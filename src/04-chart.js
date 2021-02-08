@@ -414,3 +414,11 @@ function ready(datapoints) {
     svg.selectAll('.top-ten-label').transition().style('visibility', 'visible')
   })
 }
+
+function convertToLocaleString(val) {
+  try {
+    return val.toLocaleString()   
+  } catch (error) {
+    return null
+  }
+}

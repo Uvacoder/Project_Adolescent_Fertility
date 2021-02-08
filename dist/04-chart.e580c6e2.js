@@ -31505,6 +31505,14 @@ function ready(datapoints) {
     svg.selectAll('.top-ten-label').transition().style('visibility', 'visible');
   });
 }
+
+function convertToLocaleString(val) {
+  try {
+    return val.toLocaleString();
+  } catch (error) {
+    return null;
+  }
+}
 },{"d3":"../node_modules/d3/index.js","d3-collection":"../node_modules/d3-collection/src/index.js","./data/allcontinentdata.csv":"data/allcontinentdata.csv"}],"../../../../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
