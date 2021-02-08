@@ -34,11 +34,11 @@ var forceXSeparate = d3
     } else if (d.Region === 'Middle East & North Africa') {
       return 700
     } else if (d.Region === 'North America') {
-      return 280
+      return 500
     } else if (d.Region === 'South Asia') {
-      return 480
+      return 600
     } else if (d.Region === 'Europe & Central Asia') {
-      return 680
+      return 730
     } else if (d.Region === 'East Asia & Pacific') {
       return 800
      }
@@ -58,9 +58,9 @@ var forceYSeparate = d3
     } else if (d.Region === 'South Asia') {
       return 500
     } else if (d.Region === 'Europe & Central Asia') {
-      return 500
+      return 700
     } else if (d.Region === 'East Asia & Pacific') {
-      return 500
+      return 800
      }
   })
   .strength(0.1)
@@ -233,36 +233,36 @@ function ready(datapoints) {
     .attr('font-weight', 500)
     .attr('class', 'region-label')
     .attr('x', function (d) {
-      if (d.Region === 'Sub-Saharan Africa') {
+      if (d.key === 'Sub-Saharan Africa') {
         return 250
-      } else if (d.Region === 'Latin America & Caribbean') {
+      } else if (d.key === 'Latin America & Caribbean') {
         return 500
-      } else if (d.Region === 'Middle East & North Africa') {
+      } else if (d.key === 'Middle East & North Africa') {
         return 750
-      } else if (d.Region === 'North America') {
+      } else if (d.key === 'North America') {
         return 230
-      } else if (d.Region === 'South Asia') {
+      } else if (d.key === 'South Asia') {
         return 500
-      } else if (d.Region === 'Europe & Central Asia') {
+      } else if (d.key === 'Europe & Central Asia') {
         return 650
-      } else if (d.Region === 'East Asia & Pacific') {
+      } else if (d.key === 'East Asia & Pacific') {
         return 800
        }
     })
     .attr('y', function (d) {
       if (d.Region === 'Sub-Saharan Africa') {
         return 0
-      } else if (d.Region === 'Latin America & Caribbean') {
+      } else if (d.key === 'Latin America & Caribbean') {
         return 0
-      } else if (d.Region === 'Middle East & North Africa') {
+      } else if (d.key === 'Middle East & North Africa') {
         return 0
-      } else if (d.Region === 'North America') {
+      } else if (d.key === 'North America') {
         return 450
-      } else if (d.Region === 'South Asia') {
+      } else if (d.key === 'South Asia') {
         return 450
-      } else if (d.Region === 'Europe & Central Asia') {
+      } else if (d.key === 'Europe & Central Asia') {
         return 450
-      } else if (d.Region === 'East Asia & Pacific') {
+      } else if (d.key === 'East Asia & Pacific') {
         return 450
        }
     })
