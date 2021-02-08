@@ -38,9 +38,9 @@ var forceXSeparate = d3
     } else if (d.Region === 'South Asia') {
       return 480
     } else if (d.Region === 'Europe & Central Asia') {
-      return 700
+      return 580
     } else if (d.Region === 'East Asia & Pacific') {
-      return 700
+      return 600
      }
   })
   .strength(0.1)
