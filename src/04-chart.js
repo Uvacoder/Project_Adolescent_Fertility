@@ -110,16 +110,17 @@ function ready(datapoints) {
     'Guinea',
     'Malawi',
     'Central African Republic',
-    'Dominican Republic',
-'Venezuela',
-'Nicaragua',
-'Panama',
-'Ecuador',
-'Guyana',
-'Honduras',
-'Paraguay',
-'Guatemala',
-'El Salvador' 
+    'Democratic Republic of the Congo',
+    'Zambia',
+    'United Republic of Tanzania',
+    'Uganda',
+    'Republic of Congo',
+    'Sierra Leone',
+    'Madagascar',
+    'Nigeria',
+    'Guinea Bissau',
+    'Cameroon',
+    'Burkina Faso'
   ]
 
   var topData = [
@@ -133,7 +134,6 @@ function ready(datapoints) {
     'Guinea',
     'Malawi',
     'Central African Republic',
-    'Dominican Republic',
 'Venezuela',
 'Nicaragua',
 'Panama',
@@ -142,7 +142,13 @@ function ready(datapoints) {
 'Honduras',
 'Paraguay',
 'Guatemala',
-'El Salvador' 
+'El Salvador',
+'Iraq',
+'Yemen',
+'Egypt',
+'West Bank and Gaza',
+'Solomon Islands',
+'Bangladesh'
   ]
 
   var circles = svg

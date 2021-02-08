@@ -31341,8 +31341,8 @@ function ready(datapoints) {
     return d.Region;
   }).entries(datapoints); // make a list of Arab spring countries
 
-  var arabSpring = ['Niger', 'Mali', 'Chad', 'Liberia', 'Mozambique', 'Angola', 'Equatorial Guinea', 'Guinea', 'Malawi', 'Central African Republic', 'Dominican Republic', 'Venezuela', 'Nicaragua', 'Panama', 'Ecuador', 'Guyana', 'Honduras', 'Paraguay', 'Guatemala', 'El Salvador'];
-  var topData = ['Niger', 'Mali', 'Chad', 'Liberia', 'Mozambique', 'Angola', 'Equatorial Guinea', 'Guinea', 'Malawi', 'Central African Republic', 'Dominican Republic', 'Venezuela', 'Nicaragua', 'Panama', 'Ecuador', 'Guyana', 'Honduras', 'Paraguay', 'Guatemala', 'El Salvador'];
+  var arabSpring = ['Niger', 'Mali', 'Chad', 'Liberia', 'Mozambique', 'Angola', 'Equatorial Guinea', 'Guinea', 'Malawi', 'Central African Republic', 'Democratic Republic of the Congo', 'Zambia', 'United Republic of Tanzania', 'Uganda', 'Republic of Congo', 'Sierra Leone', 'Madagascar', 'Nigeria', 'Guinea Bissau', 'Cameroon', 'Burkina Faso'];
+  var topData = ['Niger', 'Mali', 'Chad', 'Liberia', 'Mozambique', 'Angola', 'Equatorial Guinea', 'Guinea', 'Malawi', 'Central African Republic', 'Venezuela', 'Nicaragua', 'Panama', 'Ecuador', 'Guyana', 'Honduras', 'Paraguay', 'Guatemala', 'El Salvador', 'Iraq', 'Yemen', 'Egypt', 'West Bank and Gaza', 'Solomon Islands', 'Bangladesh'];
   var circles = svg.selectAll('.countries').data(datapoints).enter().append('circle').attr('r', function (d) {
     return radiusScale(d.Adolescent_Fertility_Rate);
   }).attr('opacity', 0.95).attr('class', function (d) {
