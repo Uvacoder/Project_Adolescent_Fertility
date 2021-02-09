@@ -278,6 +278,7 @@ var mode = 'Play';
   
   function append_base_path(load_data) {
     var data = load_data.Data
+
     runs.append("path")
       .datum(data)
       .style("fill", "none")
@@ -287,33 +288,32 @@ var mode = 'Play';
       .attr("d", areaRuns)
       .attr("transform", "rotate(180)");
 
+      setTimeout(() => {
+        // Create Label for 2010
+        var base_runs_path = d3.select("#base-runs-path")
+        var pathEl = base_runs_path.node();
+        var BBox = pathEl.getBBox();
 
-      // Create Label for 2010
-      var base_runs_path = d3.select("#base-runs-path")
-      var pathEl = base_runs_path.node();
-      var BBox = pathEl.getBBox();
+        runs
+          .append("text")
+          .attr("fill", "#000000")
+          .attr('x', BBox.x)
+          .attr('y', BBox.y)
+          .attr('width', BBox.width)
+          .attr('height', BBox.height)
+          .style("text-anchor", "end")
+          .style("font-size", "13px") 
+          .text("2010");
 
-      runs
-        .append("text")
-        .attr("fill", "#000000")
-        .attr('x', BBox.x)
-        .attr('y', BBox.y)
-        .attr('width', BBox.width)
-        .attr('height', BBox.height)
-        .style("text-anchor", "end")
-        .style("font-size", "13px") 
-        .text("2010");
-
-      runs.append("line")
-        .style("fill", "#000000")
-        .style("stroke", "#000000")
-        .style("stroke-width", "1px")
-        .attr("x1", BBox.x + 2)
-        .attr("y1", BBox.y - 5)
-        .attr("x2", BBox.x + 14)
-        .attr("y2", BBox.y - 5);
-        
-
+        runs.append("line")
+          .style("fill", "#000000")
+          .style("stroke", "#000000")
+          .style("stroke-width", "1px")
+          .attr("x1", BBox.x + 2)
+          .attr("y1", BBox.y - 5)
+          .attr("x2", BBox.x + 14)
+          .attr("y2", BBox.y - 5);
+      }, 500);
   }
 
   // Update chart date
