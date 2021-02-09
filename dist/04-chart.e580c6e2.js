@@ -31280,10 +31280,10 @@ var margin = {
   top: 50,
   right: 20,
   bottom: 30,
-  left: 20
+  left: 10
 };
-var height = 700 - margin.top - margin.bottom;
-var width = 1000 - margin.left - margin.right;
+var height = 720 - margin.top - margin.bottom;
+var width = 1100 - margin.left - margin.right;
 var svg = d3.select('#chart-4').append('svg').attr('height', height + margin.top + margin.bottom).attr('width', width + margin.left + margin.right).append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 var radiusScale = d3.scaleSqrt().domain([0, 5000]).range([2, 100]);
 var colorScale = d3.scaleSqrt().domain([0, 300]).range(['#f2f0f7', '#b379ce']);
@@ -31292,17 +31292,17 @@ var forceXSeparate = d3.forceX(function (d) {
   if (d.Region === 'Sub-Saharan Africa') {
     return 280;
   } else if (d.Region === 'Latin America & Caribbean') {
-    return 480;
-  } else if (d.Region === 'Middle East & North Africa') {
-    return 700;
-  } else if (d.Region === 'North America') {
     return 500;
+  } else if (d.Region === 'Middle East & North Africa') {
+    return 720;
+  } else if (d.Region === 'North America') {
+    return 280;
   } else if (d.Region === 'South Asia') {
-    return 600;
+    return 420;
   } else if (d.Region === 'Europe & Central Asia') {
-    return 730;
+    return 600;
   } else if (d.Region === 'East Asia & Pacific') {
-    return 800;
+    return 780;
   }
 }).strength(0.1);
 var forceYSeparate = d3.forceY(function (d) {
@@ -31317,9 +31317,9 @@ var forceYSeparate = d3.forceY(function (d) {
   } else if (d.Region === 'South Asia') {
     return 500;
   } else if (d.Region === 'Europe & Central Asia') {
-    return 700;
+    return 500;
   } else if (d.Region === 'East Asia & Pacific') {
-    return 800;
+    return 500;
   }
 }).strength(0.1);
 var forceXCombine = d3.forceX(width / 2).strength(0.10);
@@ -31341,8 +31341,8 @@ function ready(datapoints) {
     return d.Region;
   }).entries(datapoints); // make a list of Arab spring countries
 
-  var arabSpring = ['Niger', 'Mali', 'Chad', 'Liberia', 'Mozambique', 'Angola', 'Equatorial Guinea', 'Guinea', 'Malawi', 'Central African Republic', 'Democratic Republic of the Congo', 'Zambia', 'United Republic of Tanzania', 'Uganda', 'Republic of Congo', 'Sierra Leone', 'Madagascar', 'Nigeria', 'Guinea Bissau', 'Cameroon', 'Burkina Faso'];
-  var topData = ['Niger', 'Mali', 'Chad', 'Liberia', 'Mozambique', 'Angola', 'Equatorial Guinea', 'Guinea', 'Malawi', 'Central African Republic', 'Venezuela', 'Nicaragua', 'Panama', 'Ecuador', 'Guyana', 'Honduras', 'Paraguay', 'Guatemala', 'El Salvador', 'Iraq', 'Yemen', 'Egypt', 'West Bank and Gaza', 'Solomon Islands', 'Bangladesh'];
+  var arabSpring = ['Mozambique', 'Niger', 'Mali', 'Chad', 'Liberia', 'Angola', 'Equatorial Guinea', 'Guinea', 'Malawi', 'Central African Republic', 'Democratic Republic of the Congo', 'Zambia', 'United Republic of Tanzania', 'Uganda', 'Republic of Congo', 'Sierra Leone', 'Madagascar', 'Nigeria', 'Guinea Bissau', 'Cameroon', 'Burkina Faso'];
+  var topData = ['Central African Republic', 'Mozambique', 'Niger', 'Mali', 'Chad', 'Liberia', 'Angola', 'Equatorial Guinea', 'Guinea', 'Malawi', 'Guatemala', 'Venezuela', 'Nicaragua', 'Panama', 'Ecuador', 'Guyana', 'Honduras', 'Paraguay', 'El Salvador', 'Iraq', 'Yemen', 'Egypt', 'West Bank and Gaza', 'Solomon Islands', 'Bangladesh', 'Azerbaijan', 'Tajikistan', 'Laos', 'Philippine', 'Papua New Guinea', 'Cambodia'];
   var circles = svg.selectAll('.countries').data(datapoints).enter().append('circle').attr('r', function (d) {
     return radiusScale(d.Adolescent_Fertility_Rate);
   }).attr('opacity', 0.95).attr('class', function (d) {
@@ -31393,9 +31393,9 @@ function ready(datapoints) {
     } else if (d.key === 'North America') {
       return 230;
     } else if (d.key === 'South Asia') {
-      return 500;
+      return 400;
     } else if (d.key === 'Europe & Central Asia') {
-      return 650;
+      return 600;
     } else if (d.key === 'East Asia & Pacific') {
       return 800;
     }
@@ -31407,13 +31407,13 @@ function ready(datapoints) {
     } else if (d.key === 'Middle East & North Africa') {
       return 0;
     } else if (d.key === 'North America') {
-      return 450;
+      return 400;
     } else if (d.key === 'South Asia') {
-      return 450;
+      return 400;
     } else if (d.key === 'Europe & Central Asia') {
-      return 450;
+      return 400;
     } else if (d.key === 'East Asia & Pacific') {
-      return 450;
+      return 400;
     }
   }).attr('fill', '#000000').attr('text-anchor', 'middle').attr('opacity', 0.7).attr('visibility', 'hidden'); // add text-label on each circle
 

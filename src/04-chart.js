@@ -1,11 +1,11 @@
 import * as d3 from 'd3'
 import { nest } from 'd3-collection';
 
-var margin = {top: 50, right: 20, bottom: 30, left: 20}
+var margin = {top: 50, right: 20, bottom: 30, left: 10}
 
-let height = 700 - margin.top - margin.bottom
+let height = 720 - margin.top - margin.bottom
 
-let width = 1000 - margin.left - margin.right
+let width = 1100 - margin.left - margin.right
 
 let svg = d3
   .select('#chart-4')
@@ -30,17 +30,17 @@ var forceXSeparate = d3
     if (d.Region === 'Sub-Saharan Africa') {
       return 280
     } else if (d.Region === 'Latin America & Caribbean') {
-      return 480
-    } else if (d.Region === 'Middle East & North Africa') {
-      return 700
-    } else if (d.Region === 'North America') {
       return 500
+    } else if (d.Region === 'Middle East & North Africa') {
+      return 720
+    } else if (d.Region === 'North America') {
+      return 280
     } else if (d.Region === 'South Asia') {
-      return 600
+      return 420
     } else if (d.Region === 'Europe & Central Asia') {
-      return 730
+      return 600
     } else if (d.Region === 'East Asia & Pacific') {
-      return 800
+      return 780
      }
   })
   .strength(0.1)
@@ -58,9 +58,9 @@ var forceYSeparate = d3
     } else if (d.Region === 'South Asia') {
       return 500
     } else if (d.Region === 'Europe & Central Asia') {
-      return 700
+      return 500
     } else if (d.Region === 'East Asia & Pacific') {
-      return 800
+      return 500
      }
   })
   .strength(0.1)
@@ -100,11 +100,11 @@ function ready(datapoints) {
 
   // make a list of Arab spring countries
   var arabSpring = [
+    'Mozambique',
     'Niger',
     'Mali',
     'Chad',
     'Liberia',
-    'Mozambique',
     'Angola',
     'Equatorial Guinea',
     'Guinea',
@@ -124,16 +124,17 @@ function ready(datapoints) {
   ]
 
   var topData = [
+    'Central African Republic',
+    'Mozambique',
     'Niger',
     'Mali',
     'Chad',
     'Liberia',
-    'Mozambique',
     'Angola',
     'Equatorial Guinea',
     'Guinea',
     'Malawi',
-    'Central African Republic',
+    'Guatemala',
 'Venezuela',
 'Nicaragua',
 'Panama',
@@ -141,14 +142,19 @@ function ready(datapoints) {
 'Guyana',
 'Honduras',
 'Paraguay',
-'Guatemala',
 'El Salvador',
 'Iraq',
 'Yemen',
 'Egypt',
 'West Bank and Gaza',
 'Solomon Islands',
-'Bangladesh'
+'Bangladesh',
+'Azerbaijan',
+'Tajikistan',
+'Laos',
+'Philippine',	
+'Papua New Guinea',
+'Cambodia'
   ]
 
   var circles = svg
@@ -242,9 +248,9 @@ function ready(datapoints) {
       } else if (d.key === 'North America') {
         return 230
       } else if (d.key === 'South Asia') {
-        return 500
+        return 400
       } else if (d.key === 'Europe & Central Asia') {
-        return 650
+        return 600
       } else if (d.key === 'East Asia & Pacific') {
         return 800
        }
@@ -257,13 +263,13 @@ function ready(datapoints) {
       } else if (d.key === 'Middle East & North Africa') {
         return 0
       } else if (d.key === 'North America') {
-        return 450
+        return 400
       } else if (d.key === 'South Asia') {
-        return 450
+        return 400
       } else if (d.key === 'Europe & Central Asia') {
-        return 450
+        return 400
       } else if (d.key === 'East Asia & Pacific') {
-        return 450
+        return 400
        }
     })
     .attr('fill', '#000000')
