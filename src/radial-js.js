@@ -12,10 +12,10 @@ var mode = 'Play';
   var width = 560 - margin.left - margin.right,
       height = 500 - margin.top - margin.bottom;
   
-  var svg = d3.select('#radar-live-chart')//d3.select("body").append("svg")
+  var svg = d3.select('#radar-live-chart svg')//d3.select("body").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
-      .append("g")
+        .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
   
   var center = svg.append("g")
@@ -204,7 +204,7 @@ var mode = 'Play';
     
     runs = center.append("g");
     
-    //append_base_path(load_data)
+    append_base_path(load_data)
     
     runs.append("path")
       .datum(data)

@@ -28,30 +28,44 @@
         </p>
       </div>
     </div>
-    <h1 style="font-family: inherit;text-align: center; font-size: 1.3rem; line-height: 1.2; font-weight: bold; color: rgb(51, 51, 51); margin: 0px; padding-top: 0rem;">The trend in adolescent fertility has been downward in all regions but there are very sharp differences in levels and trends.</h1>
-    <br>
-    <div class="row">      
-        <div class="offset-2 col-9">
-          <div><p>Choose the year to explore</p></div>
-          <div>
-            <select id="year-selected">
-              <option>2010</option>
-              <option>2011</option>
-              <option>2012</option>
-              <option>2013</option>
-              <option>2014</option>
-              <option>2015</option>
-              <option>2016</option>
-              <option>2017</option>
-              <option>2018</option>
-            </select>
-          </div>
+
+    <div class="row">
+      <div class="col-12">
+        <h1 style="font-family: inherit;text-align: center; font-size: 1.3rem; line-height: 1.2; font-weight: bold; color: rgb(51, 51, 51); margin: 0px; padding-top: 0rem;">The trend in adolescent fertility has been downward in all regions but there are very sharp differences in levels and trends.</h1>
+      </div>
+    </div>
+
+    <div class="row">
+
       <div class="offset-2 col-12">
-        <svg id="radar-live-chart"></svg>
-      </div>  
+        <div>
+          <p>Choose the year to explore</p>
+        </div>
+        <div>
+          <select id="year-selected">
+            <option>2010</option>
+            <option>2011</option>
+            <option>2012</option>
+            <option>2013</option>
+            <option>2014</option>
+            <option>2015</option>
+            <option>2016</option>
+            <option>2017</option>
+            <option>2018</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="offset-2 col-9">
+        <div >
+          <div id="radar-live-chart">
+            <svg></svg>
+          </div>
+        </div>
+      </div>
+
     </div> 
-    
-<br><br>
+
     <div class="row">
       <div class="offset-2 col-9">
         <p>The World Health Organization (WHO) defines adolescence as the “period of life in which
@@ -63,10 +77,10 @@
       <div class="col-12">
         <!-- Map with regions--> 
         <iframe src='https://flo.uri.sh/visualisation/5048247/embed' title='Interactive or visual content' frameborder='0' scrolling='no' style='width:100%;height:600px;'></iframe><div style='width:100%!;margin-top:4px!important;text-align:right!important;'><a class='flourish-credit' href='https://public.flourish.studio/visualisation/5048247/?utm_source=embed&utm_campaign=visualisation/5048247' target='_top' style='text-decoration:none!important'></a></div>
-</div>
+      </div>
     </div>
 
-<!-- Bubble Chart-->
+    <!-- Bubble Chart-->
     <div class="row">
       <div class="offset-2 col-9">
         <h1 style="font-family: inherit;text-align: center; font-size: 1.3rem; line-height: 1.2; font-weight: bold; color: rgb(51, 51, 51); margin: 0px; padding-top: 0rem;">Teen childbearing in Europe & Central Asia and Sub-Saharan Africa</h1>
@@ -75,12 +89,12 @@
         <span class="dotsmall"></span> 20 births per 1000 adolescents  <span class="dotbig"></span>100 births per 1,000 adolescents</p>          
         <p><i>Hover over the bubble to get more information.</i></p>
       </div>
-</div>     
+    </div>     
 
-<div class="row ">
-  <div class="offset-0 col-lg-12 sticky">
-      <div id="chart-4"></div>
-  </div>
+    <div class="row ">
+      <div class="offset-0 col-lg-12 sticky">
+          <div id="chart-4"></div>
+      </div>
        <div class="offset-4 col-4" style= "pointer-events:none">
         <div class='step' id='origin'>
          <p><span class='colored-text' >Each bubble represents a country, the radius represents the total adolescent fertility rate of year 2018.</span></p>
@@ -97,10 +111,9 @@
         <div class='step' id="split-highlight">
           <p><span class='colored-text' >The countries with the highest estimated adolescent fertility rates for each region are highlated.</span></p>
         </div>
-    </div>
+      </div>
    </div>
 
-   <br><br>
     <div class="row">
       <div class="offset-2 col-9">
         <p>The countries with the highest estimated adolescent fertility rates in LAC region are in Central America, 
@@ -108,7 +121,9 @@
           the highest rates; and in South America, Bolivia and Venezuela have the highest rates.</p>
 
       </div>
+    </div>
 
+  </div>
 
   <div class="container-fluid"> 
 
