@@ -8,8 +8,9 @@
     "lint": "eslint --fix graph.js",
     "prettier": "prettier graph.js",
     "start": "parcel src/index.html",
-    "build": "parcel build src/index.html --out-dir docs --public-url ./"
+    "build": "parcel build src/index.html --out-dir docs --public-url /Project_Adolescent_Fertilty/"
   },
+  "homepage": "https://ella24.github.io/Project_Adolescent_Fertility",
   "author": "Coral Negron <cnegronalmodovar@worldbank.org>",
   "license": "ISC",
   "devDependencies": {
