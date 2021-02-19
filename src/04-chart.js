@@ -1,11 +1,11 @@
 import * as d3 from 'd3'
 import { nest } from 'd3-collection';
 
-var margin = {top: 50, right: 20, bottom: 30, left: 10}
+var margin = {top: 20, right: 5, bottom: 20, left: -15}
 
 let height = 720 - margin.top - margin.bottom
 
-let width = 1100 - margin.left - margin.right
+let width = 1200 - margin.left - margin.right
 
 let svg = d3
   .select('#chart-4')
@@ -33,14 +33,14 @@ var forceXSeparate = d3
       return 500
     } else if (d.Region === 'Middle East & North Africa') {
       return 720
-    } else if (d.Region === 'North America') {
-      return 280
     } else if (d.Region === 'South Asia') {
       return 420
     } else if (d.Region === 'Europe & Central Asia') {
       return 600
     } else if (d.Region === 'East Asia & Pacific') {
       return 780
+    } else if (d.Region === 'North America') {
+      return 280
      }
   })
   .strength(0.1)
@@ -53,13 +53,13 @@ var forceYSeparate = d3
       return 200
     } else if (d.Region === 'Middle East & North Africa') {
       return 200
-    } else if (d.Region === 'North America') {
-      return 500
     } else if (d.Region === 'South Asia') {
       return 500
     } else if (d.Region === 'Europe & Central Asia') {
       return 500
     } else if (d.Region === 'East Asia & Pacific') {
+      return 500
+    } else if (d.Region === 'North America') {
       return 500
      }
   })
@@ -150,10 +150,10 @@ function ready(datapoints) {
 'Solomon Islands',
 'Bangladesh',
 'Azerbaijan',
+'Papua New Guinea',
 'Tajikistan',
 'Laos',
 'Philippine',	
-'Papua New Guinea',
 'Cambodia'
   ]
 
@@ -196,7 +196,7 @@ function ready(datapoints) {
     .attr('fill', d => colorScale(d.Adolescent_Fertility_Rate))
     .on('mousemove', function(d, i) {
       div
-        .html(i.ADMIN + '<br>' + convertToLocaleString(i.Adolescent_Fertility_Rate))//.toLocaleString())
+        .html(i.ADMIN + '<br>' + 'Adolescent fertility rate: '+ convertToLocaleString(i.Adolescent_Fertility_Rate) +' per 1,000 women (ages 15-19)')//.toLocaleString())
         .style('left', d.pageX + 'px')
         .style('top', d.pageY - 28 + 'px')
         .style('display', 'block')
@@ -208,7 +208,7 @@ function ready(datapoints) {
     .on('mouseover', function(d, i) {
       div.transition().style('opacity', 0.9)
       div
-        .html(i.ADMIN + '<br>' + convertToLocaleString(i.Adolescent_Fertility_Rate)) //.toLocaleString())
+        .html(i.ADMIN + '<br>' + 'Adolescent fertility rate: '+ convertToLocaleString(i.Adolescent_Fertility_Rate) +' per 1,000 women (ages 15-19)')//.toLocaleString())
         .style('left', d.pageX + 'px')
         .style('top', d.pageY - 28 + 'px')
         .attr("dy", "-1em")
@@ -235,8 +235,9 @@ function ready(datapoints) {
     .enter()
     .append('text')
     .text((d) => d.key)
-    .attr('font-size', 18)
-    .attr('font-weight', 500)
+    .attr('font-size', 15)
+    .attr('font-weight', 300)
+    .attr('fill', '#000000')
     .attr('class', 'region-label')
     .attr('x', function (d) {
       if (d.key === 'Sub-Saharan Africa') {
@@ -245,14 +246,14 @@ function ready(datapoints) {
         return 500
       } else if (d.key === 'Middle East & North Africa') {
         return 750
-      } else if (d.key === 'North America') {
-        return 230
       } else if (d.key === 'South Asia') {
         return 400
       } else if (d.key === 'Europe & Central Asia') {
         return 600
       } else if (d.key === 'East Asia & Pacific') {
         return 800
+      } else if (d.key === 'North America') {
+        return 230
        }
     })
     .attr('y', function (d) {
@@ -262,19 +263,18 @@ function ready(datapoints) {
         return 0
       } else if (d.key === 'Middle East & North Africa') {
         return 0
-      } else if (d.key === 'North America') {
-        return 400
       } else if (d.key === 'South Asia') {
         return 400
       } else if (d.key === 'Europe & Central Asia') {
         return 400
       } else if (d.key === 'East Asia & Pacific') {
         return 400
+      } else if (d.key === 'North America') {
+        return 400
        }
     })
     .attr('fill', '#000000')
     .attr('text-anchor', 'middle')
-    .attr('opacity', 0.7)
     .attr('visibility', 'hidden')
 
   // add text-label on each circle

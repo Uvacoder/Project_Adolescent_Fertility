@@ -1,226 +1,396 @@
-import React, { Fragment, useRef } from "react";
-import { centroids } from "../../data/data.json";
-import { forceSimulation, forceX, forceY, forceManyBody } from "d3-force";
-import { geoRobinson } from "d3-geo-projection";
-import Tooltip from "./Tooltip";
+import * as d3 from 'd3'
 
-const centroidMap = centroids.reduce((obj, item) => {
-  obj[item.id] = item;
-  return obj;
-}, {});
+var margin = { top: 45, left: 45, right: 45, bottom: 85}
 
-const margin = {
-  top: 0,
-  right: 0,
-  bottom: 7.5,
-  left: 0,
-};
+  let height = 720 - margin.top - margin.bottom
 
-const Cartogram = (props) => {
-  const { width, height, data, colorScale, areaScale } = props;
-  const tooltipRef = useRef(null);
-  const chartWidth = width - margin.left - margin.right;
-  const chartHeight = height - margin.top - margin.bottom;
-  const nodePadding = chartWidth / 500;
-  const projection = geoRobinson()
-    .scale(chartWidth * 0.2)
-    .translate([chartWidth * 0.41, chartHeight * 0.666]);
+  let width = 1200 - margin.left - margin.right
+  var widthSvg = window.innerWidth * 0.9
+  var heightSvg = 700
+  var widthScale = widthSvg - margin.left - margin.right
+  var heightScale = heightSvg - margin.top - margin.bottom
 
-  areaScale.range([1, chartWidth / 6.5]);
+  var container = d3.select("#cartogram")
+    .style("margin-left", "")
+    .style("margin-right", "")
+    .style("background-color", "")
 
-  data.forEach((d) => {
-    const { lat, lng } = centroidMap[d.code];
-    d.pos = projection([lng, lat]);
-    d.area = areaScale(d.pop);
-    d.poor_area = areaScale(d.poor_pop);
-    [d.x, d.y] = d.pos;
-  });
+  var mainSvg = container.append("svg")
+    .attr("width", widthSvg)
+    .attr("height", heightSvg)
+    .style("background-color", "")
 
-  const collide = () => {
-    for (var k = 0, iterations = 4, strength = 0.5; k < iterations; ++k) {
-      for (var i = 0, n = data.length; i < n; ++i) {
-        for (var a = data[i], j = i + 1; j < n; ++j) {
-          var b = data[j],
-            x = a.x + a.vx - b.x - b.vx,
-            y = a.y + a.vy - b.y - b.vy,
-            lx = Math.abs(x),
-            ly = Math.abs(y),
-            r = a.area / 2 + b.area / 2 + nodePadding;
-          if (lx < r && ly < r) {
-            if (lx > ly) {
-              lx = (lx - r) * (x < 0 ? -strength : strength);
-              a.vx -= lx;
-              b.vx += lx;
-            } else {
-              ly = (ly - r) * (y < 0 ? -strength : strength);
-              a.vy -= ly;
-              b.vy += ly;
-            }
+  var mainG = mainSvg.append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+
+  // enter code to define projection and path required for Choropleth
+  var projection = d3.geoMercator()
+      .scale(1280)
+      .translate([width / 2, height / 2]);
+          
+  var path = d3.geoPath()
+        .projection(projection);
+
+  var color = d3.scaleThreshold()
+    .domain(d3.range(0, 200))
+    .range(d3.schemePurples[9]);
+
+    Promise.all([
+      d3.json(require("./data/countries.json")),
+      d3.csv(require("./data/mapdata.csv"))
+    ])
+      .then(ready)
+      .catch(err => console.log('Failed on', err))
+
+  function ready(error, polygon, datapoints) {
+    var countries = topojson.feature(polygon, polygon.countries).features
+    var country = datapoints.map(function(d){
+      return d.code
+    })
+    var AdoFertMax = d3.max(datapoints, function(d){
+      return +d['2018']
+    })
+    var xPositionScale = d3.scaleBand()
+      .domain(country)
+      .range([15, widthScale])
+    var yPositionScale = d3.scaleLinear()
+      .domain([0 , AdoFertMax])
+      .range([heightScale, 0])
+    var xAxis = d3.axisBottom(xPositionScale)
+    var yAxis = d3.axisLeft(yPositionScale)
+                  .tickValues([0, 20, 60, 100, 120, 160, 200]).tickFormat(d3.format(".0s"))
+
+    for ( var i = 0; i < datapoints.length; i++) {
+      for (var j = 0; j < countries.length; j++) {
+        if (datapoints[i].countries === countries[j].properties.name) {
+          datapoints[i].geometry = countries[j]['geometry']
+          datapoints[i].properties = countries[j]['properties']
+          datapoints[i].type = countries[j]['type']
+          break
+        } else {
+        }// END if
+      }// END loop states
+    }// END loop datapoints
+
+    function throwLegend() {
+      xPositionScaleLegend = d3.scaleBand()
+        .domain(color.range())
+        .range([0, 600])
+
+      colorScaleLegend = d3.scaleOrdinal()
+        .domain(color.range())
+        .range(color.range())
+
+      mainG.selectAll(".legendCircles")
+        .data(color.range())
+        .enter().append("circle")
+        .attr("class", "legendCircles")
+        .attr("opacity", 1)
+        .attr("r", 10)
+        .attr("cx", function(d){
+          return widthScale*0.3 + xPositionScaleLegend(d)
+        })
+        .attr("cy", heightScale)
+        .attr("fill", function(d){
+          return colorScaleLegend(d)
+        })
+        .attr("stroke", "lightgray")
+
+      mainG.selectAll(".legendTexts")
+        .data(color.range())
+        .enter().append("text")
+        .attr("class", "legendTexts")
+        .attr("opacity", 1)
+        .text(function(d){
+          if (d === "#67000d") {
+            return "14%"
+          } else if (d === "#fb6a4a"){
+            return "4%"
+          } else if (d === "#fff5f0") {
+            return "0.2%"
           }
+        })
+        .attr("x", function(d){
+          if (d === "#fb6a4a") {
+            return widthScale*0.291 + xPositionScaleLegend(d)
+          } else {
+            return widthScale*0.288 + xPositionScaleLegend(d)
+          }
+        })
+        .attr("y", heightScale + 26)
+
+
+      mainG.append("g")
+        .append("text")
+        .attr("class", "sourceCredit")
+        .text("Source: Gross Domestic Product by State, Second Quarter 2017 - Bureau of Economic Analysis. Population Estimates as of July, 2016 - US Census Bureau.")
+        .attr("x", widthScale*0.19)
+        .attr("y", heightScale + 65)
+
+      mainG.append("g")
+        .append("text")
+        .attr("class", "sourceCredit")
+        .text("Original Shape Tweening code sample from: bl.ocks.org/mbostock/3081153.")
+        .attr("x", widthScale*0.37)
+        .attr("y", heightScale + 80)
+    }// END of throwLegend()
+
+    function throwAxes() {
+      mainG.append("g")
+        .attr("class", "axis xAxis init")
+        .attr("transform", "translate(-12," + (heightScale + 10) + ")")
+        .attr("opacity", 0)
+        .call(xAxis.tickSize(-heightScale - 20));
+
+      mainG.append("g")
+        .attr("opacity", 0)
+        .call(yAxis.tickSize(-widthScale))
+        .attr("class", function(k){
+          return "axis yAxis init rest"
+        });
+
+      var xTicks = d3.selectAll(".xAxis .tick");
+      xTicks.attr("class", function(d, i){
+        if (i % 2 === 0) {
+          return "xAxis tick tickDashedLine"
+        } else {
+          return "xAxis tick noTickLine"
         }
+      })
+
+      var xTicksText = d3.selectAll(".xAxis .tick text");
+      xTicksText.attr("y", function(d, i){
+        if (i % 2 === 0) {
+          return 5
+        } else {
+          return 20
+        }
+      })// end of xTicks
+    }// end of throwAxes()
+
+    function drawMap() {
+      stateSvg = mainG.selectAll("svg")
+        .data(datapoints)
+        .enter().append("svg")
+        .attr("x", 0)
+        .attr("y", -90)
+
+      stateShapes = stateSvg
+        .append("path")
+        .attr("class", function(d) {
+          return d.Country
+        })
+        .attr("d", function(d){
+          return path(d)
+        })
+        .style("fill", function(d){
+          return color(+d['2018'])
+        })
+        .style("stroke", "none")      
+    }// END of drawMap()
+
+    throwAxes()
+    drawMap()
+    throwLegend()
+
+    // modified code from Mike Bostock's Shape Tweening: https://bl.ocks.org/mbostock/3081153
+    function circle(coordinates, centroidX, stateName) {
+      var circle = []
+      var length = 0
+      var lengths = [length]
+      var polygon = d3.geom.polygon(coordinates)
+      var p0 = coordinates[0]
+      var p1,
+          x,
+          y,
+          i = 0,
+          n = coordinates.length;
+
+      while (++i < n) {
+        p1 = coordinates[i];
+        x = p1[0] - p0[0];
+        y = p1[1] - p0[1];
+        lengths.push(length += 100);
+        p0 = p1;
       }
-    }
-  };
-  const applyForce = (nodes) => {
-    const simulation = forceSimulation(nodes)
-      .force(
-        "x",
-        forceX()
-          .x(
-            (d) =>
-              projection([centroidMap[d.code].lng, centroidMap[d.code].lat])[0]
-          )
-          .strength(1)
-      )
-      .force(
-        "y",
-        forceY()
-          .y(
-            (d) =>
-              projection([centroidMap[d.code].lng, centroidMap[d.code].lat])[1]
-          )
-          .strength(1)
-      )
-      .force("charge", forceManyBody().strength(-1))
-      .force("collide", collide)
-      .stop();
 
-    let i = 0;
-    while (simulation.alpha() > 0.01 && i < 500) {
-      simulation.tick();
-      i++;
-      //console.log(`${Math.round((100 * i) / 200)}%`);
-    }
-  };
-  applyForce(data);
+      var area = polygon.area(),
+          radius = 12,
+          centroid = polygon.centroid(-1 / (6 * area)),
+          angleOffset = -Math.PI / 2,
+          angle,
+          i = -1,
+          k
 
-  return (
-    <Fragment>
-      <svg width={width} height={height}>
-        <g transform={`translate(${margin.left}, ${margin.top})`}>
-          <g className="symbol-layer">
-            {data.map((d) => {
-              return (
-                <g
-                  className={`country-g ${d.code}-g`}
-                  key={d.code}
-                  transform={`translate(${d.x}, ${d.y})`}
-                  onMouseOver={() => {
-                    const end = d.x > chartWidth / 2 ? true : false;
-                    const xOffset = d.area / 2 + 5;
-                    const yOffset = margin.top;
+      while (++i < n) {
+        if (stateName === "DC") {
+          k = 2 * 10000;
+        } else {
+          k = 12 * Math.PI / lengths[lengths.length - 1];
+        }
+        angle = angleOffset + lengths[i] * k;
+        centroidXZero = centroid[0] + (radius * Math.cos(angle))// + 200
+        centroidYZero = centroid[1] + (radius * Math.sin(angle))// + 200
+        circle.push([
+          centroidXZero,
+          centroidYZero
+        ]);
+      }
+      return circle;
+    }// END of circle
 
-                    tooltipRef.current.handleMouseOver(
-                      d,
-                      d.x,
-                      d.y,
-                      xOffset,
-                      yOffset,
-                      chartWidth,
-                      end
-                    );
-                  }}
-                  onMouseOut={() => {
-                    tooltipRef.current.handleMouseOut();
-                  }}
-                >
-                  <rect
-                    className="country-pop-rect"
-                    x={-d.area / 2}
-                    y={-d.area / 2}
-                    width={d.area}
-                    height={d.area}
-                    // fill={colorScale(d.rate)}
-                  ></rect>
-                  <rect
-                    className="country-poor-rect"
-                    x={-d.poor_area / 2}
-                    y={-d.poor_area / 2}
-                    width={d.poor_area}
-                    height={d.poor_area}
-                    fill={colorScale(d.rate)}
-                  ></rect>
-                  {d.poor_area > 25 && (
-                    <text className="country-label">{d.code}</text>
-                  )}
-                  {d.code === "USA" && (
-                    <g>
-                      <text
-                        className="key-text"
-                        x={-d.area / 2}
-                        y={-d.area - height / 20}
-                      >
-                        Total population
-                      </text>
-                      <line
-                        className="key-line"
-                        x1={-d.area / 3}
-                        x2={-d.area / 3}
-                        y1={-d.area / 2}
-                        y2={-d.area + 10 - height / 20}
-                      ></line>
-                      <text className="key-text" x={d.poor_area / 2 + 10}>
-                        Population in poverty
-                      </text>
-                      <line
-                        className="key-line"
-                        x1={d.poor_area / 2}
-                        x2={d.poor_area / 2 + 7.5}
-                        y1={0}
-                        y2={0}
-                      ></line>
-                    </g>
-                  )}
-                </g>
-              );
-            })}
-          </g>
-        </g>
-        {/* <g
-        className="color-legend"
-        transform={`translate(${width * 0.65}, ${height * 0.9})`}
-      >
-        <text className="legend-title" x={rectWidth * 3} y={-rectHeight}>
-          Poverty rate
-        </text>
-        {colorScale.range().map((d, i) => {
-          return (
-            <rect
-              className="legend-rect"
-              key={d}
-              fill={d}
-              width={rectWidth}
-              height={rectHeight}
-              x={i * rectWidth}
-            ></rect>
-          );
-        })}
-        {colorScale.quantiles().map((d, i) => {
-          return (
-            <g
-              className="legend-tick"
-              key={d}
-              transform={`translate(${(i + 1) * rectWidth}, ${0})`}
-            >
-              <line
-                className="tick-line"
-                x1={0}
-                x2={0}
-                y1={0}
-                y2={rectHeight * 1.5}
-              ></line>
-              <text className="tick-text" y={rectHeight * 3}>{`${formatPercent(
-                d
-              )}${i == 0 ? "%" : ""}`}</text>
-            </g>
-          );
-        })}
-      </g> */}
-        <g className="size-legend"></g>
-      </svg>
-      <Tooltip ref={tooltipRef} />
-    </Fragment>
-  );
-};
+    function createCircles() {
+      function changeShape() {
+        mainG.selectAll(".init")
+          .transition()
+          .duration(2500)
+          .attr("class", "changed")
+          .attr("opacity", 1)
 
-export default Cartogram;
+        mainG.selectAll(".legendCircles")
+          .transition()
+          .duration(500)
+          .attr("opacity", 0)
+          
+        mainG.selectAll(".legendTexts")
+          .transition()
+          .duration(500)
+          .attr("opacity", 0)
+
+        stateShapes
+          .transition()
+          .duration(2000)
+          .style("stroke", "none")
+          .attr("d", function(d){
+            if (d.properties.name === "Hawaii") {
+              var originalCoordsArray = d.geometry.coordinates
+              var newCoordsArray = []
+
+              for (var i = 0; i < originalCoordsArray.length; i++) {
+                var originalCoordsArrayStep = originalCoordsArray[i][0]
+                for (var j = 0; j < originalCoordsArrayStep.length; j++) {
+                  newCoordsArray.push(originalCoordsArrayStep[j])
+                }//END of nested for loop
+              }//END of outer for loop
+
+              newCoordsArray = newCoordsArray.slice(0,129)
+
+              var coordinates0 = newCoordsArray.map(projection)
+              var coordinates1 = circle(coordinates0, widthScale)
+
+              var d1 = "M" + coordinates1.join("L") + "Z"
+
+              return d1
+
+            }
+            else if (d.geometry.type === "MultiPolygon") {
+              var originalCoordsArray = d.geometry.coordinates
+              var newCoordsArray = []
+
+              for (var i = 0; i < originalCoordsArray.length; i++) {
+                var originalCoordsArrayStep = originalCoordsArray[i][0]
+                for (var j = 0; j < originalCoordsArrayStep.length; j++) {
+                  newCoordsArray.push(originalCoordsArrayStep[j])
+                }//END of nested for loop
+              }//END of outer for loop
+
+              var coordinates0 = newCoordsArray.map(projection)
+              var coordinates1 = circle(coordinates0, widthScale)
+
+              var d1 = "M" + coordinates1.join("L") + "Z"
+
+              return d1
+            } else {
+                var coordinates0 = d.geometry.coordinates[0].map(projection)
+                var coordinates1 = circle(coordinates0, widthScale, d.Abbr)
+                var d1 = "M" + coordinates1.join("L") + "Z"
+                return d1
+            }
+          })
+          .style("stroke", "none")
+          .style("fill", function(d){
+            return color(+d.Percent)
+          })
+      }// END of changeShape()
+
+      changeShape()
+
+      setTimeout(function changeX() {
+          stateSvg
+            .attr("x", function(d){
+            })
+            .transition()
+            .duration(3000)
+            .attr("x", function(d) {
+              var currentPathX = document.getElementsByClassName(d.State)[0].getBoundingClientRect().x
+              var toMovePathXScaled = xPositionScale(d.Abbr)
+
+              if (d.geometry.type === "MultiPolygon") {
+                return (toMovePathXScaled - currentPathX) + 105
+              } else {
+                return (toMovePathXScaled - currentPathX) + 105
+              }
+            })
+            .attr("y", function(d) {
+              var currentPathY = document.getElementsByClassName(d.State)[0].getBoundingClientRect().y
+              var toMovePathYScaled = yPositionScale(+d.Pop)
+
+              if (d.geometry.type === "MultiPolygon") {
+                return (toMovePathYScaled - currentPathY) - 19
+              } else {
+                return (toMovePathYScaled - currentPathY) - 19
+              }
+            })
+      }, 2150)
+    
+      d3.selectAll("#chart1-scatterplot").on('click', null)
+      d3.selectAll("#chart1-map").on('click', updateMap)
+
+    }// END of createCircle()
+
+    function updateMap() {
+      mainG.selectAll(".changed")
+          .transition()
+          .duration(500)
+          .attr("class", "init")
+          .attr("opacity", 0)
+
+      mainG.selectAll(".legendCircles")
+          .transition()
+          .duration(2500)
+          .attr("opacity", 1)
+          
+      mainG.selectAll(".legendTexts")
+          .transition()
+          .duration(2500)
+          .attr("opacity", 1)
+
+      stateSvg
+        .transition()
+        .duration(2000)
+        .attr("x", 0)
+        .attr("y", -90)
+
+      stateShapes
+        .style("stroke", "none")
+        .transition()
+        .duration(2000)
+        .style("fill", function(d){
+          return color(+d['2018'])
+        })
+        .attr("d", path)
+        .style("stroke", "none")
+        .attr("transform", "translate(0,0)")
+
+
+      d3.selectAll("#chart1-scatterplot").on('click', null)      
+      d3.selectAll("#cartogram").on('click', null)
+      d3.selectAll("#chart1-scatterplot").on('click', createCircles)
+    }// END of updateMap()
+
+    d3.select("#cartogram")
+      .on("click", updateMap)
+    d3.select("#chart1-scatterplot")
+      .on("click", createCircles)
+
+  }//END of main ready function
