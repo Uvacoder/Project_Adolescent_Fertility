@@ -80,7 +80,7 @@ h1 {
 p {
   color: black;
   font-family: 'Source Sans Pro', sans-serif;
-  font-size: 14px;
+  font-size: 17px;
   line-height: 1.5em;
   justify-content: center;
 }
@@ -122,7 +122,7 @@ font {
 .dotsmall {
   height: 15px;
   width: 15px;
-  background-color: #E5D4F3;
+  background-color: black;
   border-radius: 50%;
   display: inline-block;
   text-align: center;
@@ -133,7 +133,7 @@ font {
 .dotbig {
   height: 40px;
   width: 40px;
-  background-color: #D0BCE1;
+  background-color: black;
   border-radius: 50%;
   display: inline-block;
   text-align: center;

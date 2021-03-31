@@ -1,396 +1,155 @@
 import * as d3 from 'd3'
 
-var margin = { top: 45, left: 45, right: 45, bottom: 85}
+var svg = d3.select("#cartogram"),
+    width = +svg.attr("width"),
+    height = +svg.attr("height"),
+    radius = d3.scaleSqrt().range([0, 45]).clamp(true),
+    randomizer = d3.randomNormal(0.5, 0.2),
+    color = d3.scaleLinear();
 
-  let height = 720 - margin.top - margin.bottom
+d3.json("us.json", function(err, us) {
+  var neighbors = topojson.neighbors(us.objects.states.geometries),
+      nodes = topojson.feature(us, us.objects.states).features;
 
-  let width = 1200 - margin.left - margin.right
-  var widthSvg = window.innerWidth * 0.9
-  var heightSvg = 700
-  var widthScale = widthSvg - margin.left - margin.right
-  var heightScale = heightSvg - margin.top - margin.bottom
+  nodes.forEach(function(node, i) {
 
-  var container = d3.select("#cartogram")
-    .style("margin-left", "")
-    .style("margin-right", "")
-    .style("background-color", "")
+    var centroid = d3.geoPath().centroid(node);
 
-  var mainSvg = container.append("svg")
-    .attr("width", widthSvg)
-    .attr("height", heightSvg)
-    .style("background-color", "")
+    node.x0 = centroid[0];
+    node.y0 = centroid[1];
 
-  var mainG = mainSvg.append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+    cleanUpGeometry(node);
 
-  // enter code to define projection and path required for Choropleth
-  var projection = d3.geoMercator()
-      .scale(1280)
-      .translate([width / 2, height / 2]);
-          
-  var path = d3.geoPath()
-        .projection(projection);
+  });
 
-  var color = d3.scaleThreshold()
-    .domain(d3.range(0, 200))
-    .range(d3.schemePurples[9]);
+  var states = svg.selectAll("path")
+      .data(nodes)
+      .enter()
+      .append("path")
+      .attr("d", pathString)
+      .attr("fill", "#ccc");
 
-    Promise.all([
-      d3.json(require("./data/countries.json")),
-      d3.csv(require("./data/mapdata.csv"))
-    ])
-      .then(ready)
-      .catch(err => console.log('Failed on', err))
+  simulate();
 
-  function ready(error, polygon, datapoints) {
-    var countries = topojson.feature(polygon, polygon.countries).features
-    var country = datapoints.map(function(d){
-      return d.code
-    })
-    var AdoFertMax = d3.max(datapoints, function(d){
-      return +d['2018']
-    })
-    var xPositionScale = d3.scaleBand()
-      .domain(country)
-      .range([15, widthScale])
-    var yPositionScale = d3.scaleLinear()
-      .domain([0 , AdoFertMax])
-      .range([heightScale, 0])
-    var xAxis = d3.axisBottom(xPositionScale)
-    var yAxis = d3.axisLeft(yPositionScale)
-                  .tickValues([0, 20, 60, 100, 120, 160, 200]).tickFormat(d3.format(".0s"))
+  function simulate() {
+    nodes.forEach(function(node) {
+      node.x = node.x0;
+      node.y = node.y0;
+      node.r = radius(randomizer());
+    });
 
-    for ( var i = 0; i < datapoints.length; i++) {
-      for (var j = 0; j < countries.length; j++) {
-        if (datapoints[i].countries === countries[j].properties.name) {
-          datapoints[i].geometry = countries[j]['geometry']
-          datapoints[i].properties = countries[j]['properties']
-          datapoints[i].type = countries[j]['type']
-          break
-        } else {
-        }// END if
-      }// END loop states
-    }// END loop datapoints
+    color.domain(d3.extent(nodes, d => d.r));
 
-    function throwLegend() {
-      xPositionScaleLegend = d3.scaleBand()
-        .domain(color.range())
-        .range([0, 600])
+    var links = d3.merge(neighbors.map(function(neighborSet, i) {
+      return neighborSet.filter(j => nodes[j]).map(function(j) {
+        return {source: i, target: j, distance: nodes[i].r + nodes[j].r + 3};
+      });
+    }));
 
-      colorScaleLegend = d3.scaleOrdinal()
-        .domain(color.range())
-        .range(color.range())
+    var simulation = d3.forceSimulation(nodes)
+        .force("cx", d3.forceX().x(d => width / 2).strength(0.02))
+        .force("cy", d3.forceY().y(d => height / 2).strength(0.02))
+        .force("link", d3.forceLink(links).distance(d => d.distance))
+        .force("x", d3.forceX().x(d => d.x).strength(0.1))
+        .force("y", d3.forceY().y(d => d.y).strength(0.1))
+        .force("collide", d3.forceCollide().strength(0.8).radius(d => d.r + 3))
+        .stop();
 
-      mainG.selectAll(".legendCircles")
-        .data(color.range())
-        .enter().append("circle")
-        .attr("class", "legendCircles")
-        .attr("opacity", 1)
-        .attr("r", 10)
-        .attr("cx", function(d){
-          return widthScale*0.3 + xPositionScaleLegend(d)
-        })
-        .attr("cy", heightScale)
-        .attr("fill", function(d){
-          return colorScaleLegend(d)
-        })
-        .attr("stroke", "lightgray")
+    while (simulation.alpha() > 0.1) {
+      simulation.tick();
+    }
 
-      mainG.selectAll(".legendTexts")
-        .data(color.range())
-        .enter().append("text")
-        .attr("class", "legendTexts")
-        .attr("opacity", 1)
-        .text(function(d){
-          if (d === "#67000d") {
-            return "14%"
-          } else if (d === "#fb6a4a"){
-            return "4%"
-          } else if (d === "#fff5f0") {
-            return "0.2%"
-          }
-        })
-        .attr("x", function(d){
-          if (d === "#fb6a4a") {
-            return widthScale*0.291 + xPositionScaleLegend(d)
-          } else {
-            return widthScale*0.288 + xPositionScaleLegend(d)
-          }
-        })
-        .attr("y", heightScale + 26)
+    nodes.forEach(function(node){
+      var circle = pseudocircle(node),
+          closestPoints = node.rings.slice(1).map(function(ring){
+            var i = d3.scan(circle.map(point => distance(point, ring.centroid)));
+            return ring.map(() => circle[i]);
+          }),
+          interpolator = d3.interpolateArray(node.rings, [circle, ...closestPoints]);
 
-
-      mainG.append("g")
-        .append("text")
-        .attr("class", "sourceCredit")
-        .text("Source: Gross Domestic Product by State, Second Quarter 2017 - Bureau of Economic Analysis. Population Estimates as of July, 2016 - US Census Bureau.")
-        .attr("x", widthScale*0.19)
-        .attr("y", heightScale + 65)
-
-      mainG.append("g")
-        .append("text")
-        .attr("class", "sourceCredit")
-        .text("Original Shape Tweening code sample from: bl.ocks.org/mbostock/3081153.")
-        .attr("x", widthScale*0.37)
-        .attr("y", heightScale + 80)
-    }// END of throwLegend()
-
-    function throwAxes() {
-      mainG.append("g")
-        .attr("class", "axis xAxis init")
-        .attr("transform", "translate(-12," + (heightScale + 10) + ")")
-        .attr("opacity", 0)
-        .call(xAxis.tickSize(-heightScale - 20));
-
-      mainG.append("g")
-        .attr("opacity", 0)
-        .call(yAxis.tickSize(-widthScale))
-        .attr("class", function(k){
-          return "axis yAxis init rest"
-        });
-
-      var xTicks = d3.selectAll(".xAxis .tick");
-      xTicks.attr("class", function(d, i){
-        if (i % 2 === 0) {
-          return "xAxis tick tickDashedLine"
-        } else {
-          return "xAxis tick noTickLine"
+      node.interpolator = function(t){
+        var str = pathString(interpolator(t));
+        // Prevent some fill-rule flickering for MultiPolygons
+        if (t > 0.99) {
+          return str.split("Z")[0] + "Z";
         }
-      })
+        return str;
+      };
+    });
 
-      var xTicksText = d3.selectAll(".xAxis .tick text");
-      xTicksText.attr("y", function(d, i){
-        if (i % 2 === 0) {
-          return 5
-        } else {
-          return 20
-        }
-      })// end of xTicks
-    }// end of throwAxes()
+    states
+      .sort((a, b) => b.r - a.r)
+      .transition()
+      .delay(1000)
+      .duration(1500)
+      .attrTween("d", node => node.interpolator)
+      .attr("fill", d => d3.interpolateSpectral(color(d.r)))
+      .transition()
+        .delay(1000)
+        .attrTween("d", node => t => node.interpolator(1 - t))
+        .attr("fill", "#ccc")
+        .on("end", (d, i) => i || simulate());
 
-    function drawMap() {
-      stateSvg = mainG.selectAll("svg")
-        .data(datapoints)
-        .enter().append("svg")
-        .attr("x", 0)
-        .attr("y", -90)
+  }
 
-      stateShapes = stateSvg
-        .append("path")
-        .attr("class", function(d) {
-          return d.Country
-        })
-        .attr("d", function(d){
-          return path(d)
-        })
-        .style("fill", function(d){
-          return color(+d['2018'])
-        })
-        .style("stroke", "none")      
-    }// END of drawMap()
+});
 
-    throwAxes()
-    drawMap()
-    throwLegend()
+function pseudocircle(node) {
+  return node.rings[0].map(function(point){
+    var angle = node.startingAngle - 2 * Math.PI * (point.along / node.perimeter);
+    return [
+      Math.cos(angle) * node.r + node.x,
+      Math.sin(angle) * node.r + node.y
+    ];
+  });
+}
 
-    // modified code from Mike Bostock's Shape Tweening: https://bl.ocks.org/mbostock/3081153
-    function circle(coordinates, centroidX, stateName) {
-      var circle = []
-      var length = 0
-      var lengths = [length]
-      var polygon = d3.geom.polygon(coordinates)
-      var p0 = coordinates[0]
-      var p1,
-          x,
-          y,
-          i = 0,
-          n = coordinates.length;
+function cleanUpGeometry(node) {
 
-      while (++i < n) {
-        p1 = coordinates[i];
-        x = p1[0] - p0[0];
-        y = p1[1] - p0[1];
-        lengths.push(length += 100);
-        p0 = p1;
-      }
+  node.rings = (node.geometry.type === "Polygon" ? [node.geometry.coordinates] : node.geometry.coordinates);
 
-      var area = polygon.area(),
-          radius = 12,
-          centroid = polygon.centroid(-1 / (6 * area)),
-          angleOffset = -Math.PI / 2,
-          angle,
-          i = -1,
-          k
+  node.rings = node.rings.map(function(polygon){
+    polygon[0].area = d3.polygonArea(polygon[0]);
+    polygon[0].centroid = d3.polygonCentroid(polygon[0]);
+    return polygon[0];
+  });
 
-      while (++i < n) {
-        if (stateName === "DC") {
-          k = 2 * 10000;
-        } else {
-          k = 12 * Math.PI / lengths[lengths.length - 1];
-        }
-        angle = angleOffset + lengths[i] * k;
-        centroidXZero = centroid[0] + (radius * Math.cos(angle))// + 200
-        centroidYZero = centroid[1] + (radius * Math.sin(angle))// + 200
-        circle.push([
-          centroidXZero,
-          centroidYZero
-        ]);
-      }
-      return circle;
-    }// END of circle
+  node.rings.sort((a, b) => b.area - a.area);
 
-    function createCircles() {
-      function changeShape() {
-        mainG.selectAll(".init")
-          .transition()
-          .duration(2500)
-          .attr("class", "changed")
-          .attr("opacity", 1)
+  node.perimeter = d3.polygonLength(node.rings[0]);
 
-        mainG.selectAll(".legendCircles")
-          .transition()
-          .duration(500)
-          .attr("opacity", 0)
-          
-        mainG.selectAll(".legendTexts")
-          .transition()
-          .duration(500)
-          .attr("opacity", 0)
+  // Optional step, but makes for more circular circles
+  bisect(node.rings[0], node.perimeter / 72);
 
-        stateShapes
-          .transition()
-          .duration(2000)
-          .style("stroke", "none")
-          .attr("d", function(d){
-            if (d.properties.name === "Hawaii") {
-              var originalCoordsArray = d.geometry.coordinates
-              var newCoordsArray = []
+  node.rings[0].reduce(function(prev, point){
+    point.along = prev ? prev.along + distance(point, prev) : 0;
+    node.perimeter = point.along;
+    return point;
+  }, null);
 
-              for (var i = 0; i < originalCoordsArray.length; i++) {
-                var originalCoordsArrayStep = originalCoordsArray[i][0]
-                for (var j = 0; j < originalCoordsArrayStep.length; j++) {
-                  newCoordsArray.push(originalCoordsArrayStep[j])
-                }//END of nested for loop
-              }//END of outer for loop
+  node.startingAngle = Math.atan2(node.rings[0][0][1] - node.y0, node.rings[0][0][0] - node.x0);
 
-              newCoordsArray = newCoordsArray.slice(0,129)
+}
 
-              var coordinates0 = newCoordsArray.map(projection)
-              var coordinates1 = circle(coordinates0, widthScale)
+function bisect(ring, maxSegmentLength) {
+  for (var i = 0; i < ring.length; i++) {
+    var a = ring[i], b = i === ring.length - 1 ? ring[0] : ring[i + 1];
 
-              var d1 = "M" + coordinates1.join("L") + "Z"
+    while (distance(a, b) > maxSegmentLength) {
+      b = midpoint(a, b);
+      ring.splice(i + 1, 0, b);
+    }
+  }
+}
 
-              return d1
+function distance(a, b) {
+  return Math.sqrt((a[0] - b[0]) * (a[0] - b[0]) + (a[1] - b[1]) * (a[1] - b[1]));
+}
 
-            }
-            else if (d.geometry.type === "MultiPolygon") {
-              var originalCoordsArray = d.geometry.coordinates
-              var newCoordsArray = []
+function midpoint(a, b) {
+  return [a[0] + (b[0] - a[0]) * 0.5, a[1] + (b[1] - a[1]) * 0.5];
+}
 
-              for (var i = 0; i < originalCoordsArray.length; i++) {
-                var originalCoordsArrayStep = originalCoordsArray[i][0]
-                for (var j = 0; j < originalCoordsArrayStep.length; j++) {
-                  newCoordsArray.push(originalCoordsArrayStep[j])
-                }//END of nested for loop
-              }//END of outer for loop
-
-              var coordinates0 = newCoordsArray.map(projection)
-              var coordinates1 = circle(coordinates0, widthScale)
-
-              var d1 = "M" + coordinates1.join("L") + "Z"
-
-              return d1
-            } else {
-                var coordinates0 = d.geometry.coordinates[0].map(projection)
-                var coordinates1 = circle(coordinates0, widthScale, d.Abbr)
-                var d1 = "M" + coordinates1.join("L") + "Z"
-                return d1
-            }
-          })
-          .style("stroke", "none")
-          .style("fill", function(d){
-            return color(+d.Percent)
-          })
-      }// END of changeShape()
-
-      changeShape()
-
-      setTimeout(function changeX() {
-          stateSvg
-            .attr("x", function(d){
-            })
-            .transition()
-            .duration(3000)
-            .attr("x", function(d) {
-              var currentPathX = document.getElementsByClassName(d.State)[0].getBoundingClientRect().x
-              var toMovePathXScaled = xPositionScale(d.Abbr)
-
-              if (d.geometry.type === "MultiPolygon") {
-                return (toMovePathXScaled - currentPathX) + 105
-              } else {
-                return (toMovePathXScaled - currentPathX) + 105
-              }
-            })
-            .attr("y", function(d) {
-              var currentPathY = document.getElementsByClassName(d.State)[0].getBoundingClientRect().y
-              var toMovePathYScaled = yPositionScale(+d.Pop)
-
-              if (d.geometry.type === "MultiPolygon") {
-                return (toMovePathYScaled - currentPathY) - 19
-              } else {
-                return (toMovePathYScaled - currentPathY) - 19
-              }
-            })
-      }, 2150)
-    
-      d3.selectAll("#chart1-scatterplot").on('click', null)
-      d3.selectAll("#chart1-map").on('click', updateMap)
-
-    }// END of createCircle()
-
-    function updateMap() {
-      mainG.selectAll(".changed")
-          .transition()
-          .duration(500)
-          .attr("class", "init")
-          .attr("opacity", 0)
-
-      mainG.selectAll(".legendCircles")
-          .transition()
-          .duration(2500)
-          .attr("opacity", 1)
-          
-      mainG.selectAll(".legendTexts")
-          .transition()
-          .duration(2500)
-          .attr("opacity", 1)
-
-      stateSvg
-        .transition()
-        .duration(2000)
-        .attr("x", 0)
-        .attr("y", -90)
-
-      stateShapes
-        .style("stroke", "none")
-        .transition()
-        .duration(2000)
-        .style("fill", function(d){
-          return color(+d['2018'])
-        })
-        .attr("d", path)
-        .style("stroke", "none")
-        .attr("transform", "translate(0,0)")
-
-
-      d3.selectAll("#chart1-scatterplot").on('click', null)      
-      d3.selectAll("#cartogram").on('click', null)
-      d3.selectAll("#chart1-scatterplot").on('click', createCircles)
-    }// END of updateMap()
-
-    d3.select("#cartogram")
-      .on("click", updateMap)
-    d3.select("#chart1-scatterplot")
-      .on("click", createCircles)
-
-  }//END of main ready function
+function pathString(d) {
+  return (d.rings || d).map(ring => "M" + ring.join("L") + "Z").join(" ");
+}

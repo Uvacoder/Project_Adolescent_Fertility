@@ -17,7 +17,8 @@ let svg = d3
 
 var radiusScale = d3.scaleSqrt().domain([0, 5000]).range([2, 100])
 
-var colorScale = d3.scaleSqrt().domain([0, 300]).range(['#f2f0f7', '#b379ce'])
+var color = d3.scaleSequential(d3.interpolateMagma)
+.domain([0, 190])
 
 var div = d3
   .select('body')
@@ -120,42 +121,93 @@ function ready(datapoints) {
     'Nigeria',
     'Guinea Bissau',
     'Cameroon',
-    'Burkina Faso'
+    'Burkina Faso',
+    'Ivory Coast'
   ]
 
   var topData = [
-    'Central African Republic',
-    'Mozambique',
+    'Zimbabwe',
+    'Zambia',
+    'Yemen Rep',
+    'West Bank and Gaza',
+    'Venezuela',
+    'Uruguay',
+    'Uganda',
+    'Togo',
+    'Tanzania',
+    'Tajikistan',
+    'Suriname',
+    'Sudan',
+    'South Sudan',
+    'South Africa',
+    'Somalia',
+    'Solomon Islands',
+    'Sierra Leone',
+    'Seychelles',
+    'Senegal',
+    'Sao Tome and Principe',
+    'Philippines',
+    'Peru',
+    'Paraguay',
+    'Papua New Guinea',
+    'Panama',
+    'Nigeria',
     'Niger',
+    'Nicaragua',
+    'Nepal',
+    'Namibia',
+    'Mozambique',
+    'Mexico',
+    'Mauritania',
     'Mali',
-    'Chad',
-    'Liberia',
-    'Angola',
-    'Equatorial Guinea',
-    'Guinea',
     'Malawi',
+    'Madagascar',
+    'Liberia',
+    'Lesotho',
+    'Lao PDR',
+    'Kenya',
+    'Jamaica',
+    'Iraq',
+    'Honduras',
+    'Haiti',
+    'Guyana',
+    'Guinea-Bissau',
+    'Guinea',
     'Guatemala',
-'Venezuela',
-'Nicaragua',
-'Panama',
-'Ecuador',
-'Guyana',
-'Honduras',
-'Paraguay',
-'El Salvador',
-'Iraq',
-'Yemen',
-'Egypt',
-'West Bank and Gaza',
-'Solomon Islands',
-'Bangladesh',
-'Azerbaijan',
-'Papua New Guinea',
-'Tajikistan',
-'Laos',
-'Philippine',	
-'Cambodia'
-  ]
+    'Ghana',
+    'The Gambia',
+    'Gabon',
+    'Ethiopia',
+    'Eswatini',
+    'Eritrea',
+    'Equatorial Guinea',
+    'El Salvador',
+    'Egypt',
+    'Ecuador',
+    'Dominican Republic',
+    'Cuba',
+    'Ivory Coast',
+    'Costa Rica',
+    'Democratic Republic of Congo',
+    'Republic of Congo',
+    'Comoros',
+    'Colombia',
+    'Chad',
+    'Central African Republic',
+    'Cameroon',
+    'Cambodia',
+    'Cabo Verde',
+    'Burundi',
+    'Burkina Faso',
+    'Brazil',
+    'Bolivia',
+    'Benin',
+    'Belize',
+    'Bangladesh',
+    'Azerbaijan',
+    'Argentina',
+    'Angola',
+    'Afghanistan']
 
   var circles = svg
     .selectAll('.countries')
@@ -163,7 +215,7 @@ function ready(datapoints) {
     .enter()
     .append('circle')
     .attr('r', (d) => radiusScale(d.Adolescent_Fertility_Rate))
-    .attr('opacity', 0.95)
+    .style('opacity', .95)
     .attr('class', (d) => {
       return d.ADMIN
     })
@@ -177,9 +229,9 @@ function ready(datapoints) {
         return true
       }
     })
-    .classed('mali', (d) => {
+    .classed('Korea', (d) => {
       // console.log(d)
-      if (d.ADMIN === 'Mali') {
+      if (d.ADMIN === 'Democratic People’s Republic of Korea') {
         return true
       }
     })
@@ -193,7 +245,7 @@ function ready(datapoints) {
         return true
       }
     })
-    .attr('fill', d => colorScale(d.Adolescent_Fertility_Rate))
+    .attr('fill', d => color(d.Adolescent_Fertility_Rate))
     .on('mousemove', function(d, i) {
       div
         .html(i.ADMIN + '<br>' + 'Adolescent fertility rate: '+ convertToLocaleString(i.Adolescent_Fertility_Rate) +' per 1,000 women (ages 15-19)')//.toLocaleString())
@@ -295,8 +347,8 @@ function ready(datapoints) {
         return true
       }
     })
-    .classed('mali-label', (d) => {
-      if (d.ADMIN === 'Mali') {
+    .classed('Korea-label', (d) => {
+      if (d.ADMIN === 'Democratic People’s Republic of Korea') {
         return true
       }
     })
@@ -343,7 +395,7 @@ function ready(datapoints) {
     .attr('text-anchor', 'middle')
 
   d3.select('#origin').on('stepin', () => {
-    svg.selectAll('.countries').attr('fill', d => colorScale(d.Adolescent_Fertility_Rate))
+    svg.selectAll('.countries').attr('fill', d => color(d.Adolescent_Fertility_Rate))
     svg.selectAll('.ADMIN-label').style('visibility', 'hidden')
     simulation
       .force('x', forceXCombine)
@@ -357,15 +409,15 @@ function ready(datapoints) {
     svg
       .selectAll('.arab-spring')
       .transition()
-      .attr('fill', (d) => colorScale(d.Adolescent_Fertility_Rate))
-    svg.selectAll('.niger').transition().attr('fill', '#f7545d')
-    svg.selectAll('.mali').transition().attr('fill', '#f7545d')
+      .attr('fill', (d) => color(d.Adolescent_Fertility_Rate))
+    svg.selectAll('.niger').transition()
+    svg.selectAll('.Democratic People’s Republic of Korea').transition()
     svg
       .selectAll('.arab-spring-label')
       .transition()
       .style('visibility', 'hidden')
     svg
-      .selectAll('.mali-label')
+      .selectAll('.Korea-label')
       .transition()
       .style('visibility', 'visible')
       .transition()
@@ -386,8 +438,8 @@ function ready(datapoints) {
     svg
       .selectAll('.countries')
       .transition()
-      .attr('fill', (d) => colorScale(d.Adolescent_Fertility_Rate))
-    svg.selectAll('.arab-spring').transition().attr('fill', '#f7545d')
+      .attr('fill', (d) => color(d.Adolescent_Fertility_Rate))
+    svg.selectAll('.arab-spring').transition()
     svg.selectAll('.ADMIN-label').transition().style('visibility', 'hidden')
     svg
       .selectAll('.arab-spring-label')
@@ -409,7 +461,7 @@ function ready(datapoints) {
     svg
       .selectAll('.countries')
       .transition()
-      .attr('fill', (d) => colorScale(d.Adolescent_Fertility_Rate))
+      .attr('fill', (d) => color(d.Adolescent_Fertility_Rate))
     svg.selectAll('.ADMIN-label').style('visibility', 'hidden')
 
     svg
@@ -430,8 +482,8 @@ function ready(datapoints) {
     svg
       .selectAll('.countries')
       .transition()
-      .attr('fill', (d) => colorScale(d.Adolescent_Fertility_Rate))
-    svg.selectAll('.top-ten').transition().attr('fill', '#f7545d')
+      .attr('fill', (d) => color(d.Adolescent_Fertility_Rate))
+    svg.selectAll('.top-ten').transition()
     svg.selectAll('.top-ten-label').transition().style('visibility', 'visible')
   })
 }
