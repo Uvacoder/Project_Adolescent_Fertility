@@ -215,7 +215,7 @@ function ready(datapoints) {
     .enter()
     .append('circle')
     .attr('r', (d) => radiusScale(d.Adolescent_Fertility_Rate))
-    .style('opacity', .95)
+    .style('opacity', .8)
     .attr('class', (d) => {
       return d.ADMIN
     })
@@ -396,6 +396,7 @@ function ready(datapoints) {
 
   d3.select('#origin').on('stepin', () => {
     svg.selectAll('.countries').attr('fill', d => color(d.Adolescent_Fertility_Rate))
+    .style('opacity',0.9)
     svg.selectAll('.ADMIN-label').style('visibility', 'hidden')
     simulation
       .force('x', forceXCombine)
@@ -408,10 +409,10 @@ function ready(datapoints) {
   d3.select('#asia').on('stepin', () => {
     svg
       .selectAll('.arab-spring')
-      .transition()
+      .transition().style('opacity',0.5)
       .attr('fill', (d) => color(d.Adolescent_Fertility_Rate))
-    svg.selectAll('.niger').transition()
-    svg.selectAll('.Democratic People’s Republic of Korea').transition()
+    svg.selectAll('.niger').transition().style('opacity', .9)
+    svg.selectAll('.Democratic People’s Republic of Korea').transition().style('opacity', .9)
     svg
       .selectAll('.arab-spring-label')
       .transition()
@@ -419,12 +420,11 @@ function ready(datapoints) {
     svg
       .selectAll('.Korea-label')
       .transition()
-      .style('visibility', 'visible')
-      .transition()
+      .style('visibility', 'visible').style('opacity', .9)
 
     svg.selectAll('.region-label').transition().style('visibility', 'hidden')
 
-    svg.selectAll('.niger-label').transition().style('visibility', 'visible')
+    svg.selectAll('.niger-label').transition().style('visibility', 'visible').style('opacity', .9)
     simulation
       .force('x', forceXCombine)
       .force('y', forceYCombine)
@@ -437,13 +437,13 @@ function ready(datapoints) {
     // console.log('I scroll down to arab spring')
     svg
       .selectAll('.countries')
-      .transition()
+      .transition().style('opacity',0.5)
       .attr('fill', (d) => color(d.Adolescent_Fertility_Rate))
-    svg.selectAll('.arab-spring').transition()
+    svg.selectAll('.arab-spring').transition().style('opacity', .9)
     svg.selectAll('.ADMIN-label').transition().style('visibility', 'hidden')
     svg
       .selectAll('.arab-spring-label')
-      .transition()
+      .transition().style('opacity',0.9)
       .style('visibility', 'visible')
 
     svg.selectAll('.region-label').transition().style('visibility', 'hidden')
@@ -460,7 +460,7 @@ function ready(datapoints) {
     // console.log('I scroll down to separate step')
     svg
       .selectAll('.countries')
-      .transition()
+      .style('opacity',0.9)
       .attr('fill', (d) => color(d.Adolescent_Fertility_Rate))
     svg.selectAll('.ADMIN-label').style('visibility', 'hidden')
 
@@ -481,10 +481,10 @@ function ready(datapoints) {
   d3.select('#split-highlight').on('stepin', () => {
     svg
       .selectAll('.countries')
-      .transition()
+      .transition().style('opacity',0.5)
       .attr('fill', (d) => color(d.Adolescent_Fertility_Rate))
-    svg.selectAll('.top-ten').transition()
-    svg.selectAll('.top-ten-label').transition().style('visibility', 'visible')
+    svg.selectAll('.top-ten').transition().style('opacity',0.9)
+    svg.selectAll('.top-ten-label').transition().style('visibility', 'visible').style('opacity',0.9)
   })
 }
 
