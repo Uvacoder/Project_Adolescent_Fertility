@@ -408,23 +408,24 @@ function ready(datapoints) {
   // scroll to Asia
   d3.select('#asia').on('stepin', () => {
     svg
-      .selectAll('.arab-spring')
-      .transition().style('opacity',0.5)
+      .selectAll('.countries')
+      .transition().style('opacity', 0.1)
       .attr('fill', (d) => color(d.Adolescent_Fertility_Rate))
-    svg.selectAll('.niger').transition().style('opacity', .9)
-    svg.selectAll('.Democratic People’s Republic of Korea').transition().style('opacity', .9)
+      .style('opacity',0.5)
+    svg.selectAll('.niger').transition().style('opacity',0.9)
+    svg.selectAll('.Democratic People’s Republic of Korea').transition().style('opacity',0.9)
     svg
       .selectAll('.arab-spring-label')
       .transition()
       .style('visibility', 'hidden')
     svg
       .selectAll('.Korea-label')
-      .transition()
-      .style('visibility', 'visible').style('opacity', .9)
+      .transition().style('opacity',0.9)
+      .style('visibility', 'visible')
 
     svg.selectAll('.region-label').transition().style('visibility', 'hidden')
 
-    svg.selectAll('.niger-label').transition().style('visibility', 'visible').style('opacity', .9)
+    svg.selectAll('.niger-label').transition().style('visibility', 'visible').style('opacity',0.9)
     simulation
       .force('x', forceXCombine)
       .force('y', forceYCombine)
@@ -481,7 +482,7 @@ function ready(datapoints) {
   d3.select('#split-highlight').on('stepin', () => {
     svg
       .selectAll('.countries')
-      .transition().style('opacity',0.5)
+      .transition().style('opacity',0.2)
       .attr('fill', (d) => color(d.Adolescent_Fertility_Rate))
     svg.selectAll('.top-ten').transition().style('opacity',0.9)
     svg.selectAll('.top-ten-label').transition().style('visibility', 'visible').style('opacity',0.9)
