@@ -1,155 +1,117 @@
 import * as d3 from 'd3'
+import { nest } from 'd3-collection'
+import * as topojson from 'topojson'
+import legend from 'd3-svg-legend';
 
-var svg = d3.select("#cartogram"),
-    width = +svg.attr("width"),
-    height = +svg.attr("height"),
-    radius = d3.scaleSqrt().range([0, 45]).clamp(true),
-    randomizer = d3.randomNormal(0.5, 0.2),
-    color = d3.scaleLinear();
+var plants = {},
+	startYear = 1960,
+	endYear = 2018,
+    currentYear = startYear;
 
-d3.json("us.json", function(err, us) {
-  var neighbors = topojson.neighbors(us.objects.states.geometries),
-      nodes = topojson.feature(us, us.objects.states).features;
+ var width = 1200,
+     height = 500;
+//var width = window.innerWidth-100,
+//  height = window.innerHeight-100;
 
-  nodes.forEach(function(node, i) {
+var projection = d3.geoEqualEarth()
+  .scale(width / 2 / Math.PI)
+  .translate([width / 2, height / 2]);
 
-    var centroid = d3.geoPath().centroid(node);
+var path = d3.geo.path()
+	.projection(projection);
 
-    node.x0 = centroid[0];
-    node.y0 = centroid[1];
+var svg = d3.select("body")
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height);
 
-    cleanUpGeometry(node);
+var div = d3.select("body")
+		    .append("div")
+    		.attr("class", "tooltip")
+    		.style("opacity", 0);
 
-  });
+var colorScale = d3.scaleSequential(d3.interpolateMagma).domain([0, max])
 
-  var states = svg.selectAll("path")
-      .data(nodes)
-      .enter()
-      .append("path")
-      .attr("d", pathString)
-      .attr("fill", "#ccc");
 
-  simulate();
+var g = svg.append("g");
 
-  function simulate() {
-    nodes.forEach(function(node) {
-      node.x = node.x0;
-      node.y = node.y0;
-      node.r = radius(randomizer());
-    });
+g.append( "rect" )
+  .attr("width",width)
+  .attr("height",height)
+  .attr("fill","white")
+  .attr("opacity",0)
+  .on("mouseover",function(){
+    hoverData = null;
+    if ( probe ) probe.style("display","none");
+  })
 
-    color.domain(d3.extent(nodes, d => d.r));
+queue()
+    .defer(d3.json, ('https://enjalot.github.io/wwsd/data/world/world-110m.geojson'))
+    .defer(d3.csv, "mapdata.csv")
+    .await(ready);
 
-    var links = d3.merge(neighbors.map(function(neighborSet, i) {
-      return neighborSet.filter(j => nodes[j]).map(function(j) {
-        return {source: i, target: j, distance: nodes[i].r + nodes[j].r + 3};
-      });
-    }));
+function ready(error, us, sequence) {
+  if (error) throw error;
 
-    var simulation = d3.forceSimulation(nodes)
-        .force("cx", d3.forceX().x(d => width / 2).strength(0.02))
-        .force("cy", d3.forceY().y(d => height / 2).strength(0.02))
-        .force("link", d3.forceLink(links).distance(d => d.distance))
-        .force("x", d3.forceX().x(d => d.x).strength(0.1))
-        .force("y", d3.forceY().y(d => d.y).strength(0.1))
-        .force("collide", d3.forceCollide().strength(0.8).radius(d => d.r + 3))
-        .stop();
+	svg.append("path")
+      .attr("class", "countries")
+      .datum(topojson.feature(countries, world.objects.countries))
+      .attr("d", path);
+      
+      
+      .on("mouseover", function(d) {
+						div.transition()
+								.style("left", (d3.event.pageX + 10) + "px")
+								.style("top", (d3.event.pageY - 80) + "px")
+								.duration(200)
+								.style("opacity", .9);
+						div.html("<strong>" + d.Country + "</strong><br/>" +
+						"<br/>" + d['Income Group'] + ", " + d.state)
 
-    while (simulation.alpha() > 0.1) {
-      simulation.tick();
-    }
+				 })
+					.on("mouseout", function(d) {
+						div.transition()
+							 .duration(500)
+							 .style("opacity", 0);
+						});
 
-    nodes.forEach(function(node){
-      var circle = pseudocircle(node),
-          closestPoints = node.rings.slice(1).map(function(ring){
-            var i = d3.scan(circle.map(point => distance(point, ring.centroid)));
-            return ring.map(() => circle[i]);
-          }),
-          interpolator = d3.interpolateArray(node.rings, [circle, ...closestPoints]);
+		update(currentYear,false)
 
-      node.interpolator = function(t){
-        var str = pathString(interpolator(t));
-        // Prevent some fill-rule flickering for MultiPolygons
-        if (t > 0.99) {
-          return str.split("Z")[0] + "Z";
-        }
-        return str;
-      };
-    });
+		d3.select("#slider")
+				.call(
+					chroniton()
+						.domain([new Date(startYear, 1, 1), new Date(endYear, 1, 1)])
+						.labelFormat(function(date) {
+							return Math.ceil((date.getFullYear()) / 1) * 1;
+						})
+						.width(600)
+						.on('change', function(date) {
+							var newYear = Math.ceil((date.getFullYear()) / 1) * 1;
+							if (newYear != currentYear) {
+									currentYear = newYear;
+									// circle
+									// 	.remove();
+									update(currentYear,true);
+							}
+						})
+						.playButton(true)
+						.playbackRate(0.2)
+						.loop(true)
+				);
 
-    states
-      .sort((a, b) => b.r - a.r)
-      .transition()
-      .delay(1000)
-      .duration(1500)
-      .attrTween("d", node => node.interpolator)
-      .attr("fill", d => d3.interpolateSpectral(color(d.r)))
-      .transition()
-        .delay(1000)
-        .attrTween("d", node => t => node.interpolator(1 - t))
-        .attr("fill", "#ccc")
-        .on("end", (d, i) => i || simulate());
+		var legend = svg.append("g")
+									.attr("id","legend")
+									.attr("transform", "translate(" + (width - 260) + "," + (height - 185) + ")");
 
-  }
+		legend.append("circle")
+					.attr("class","symbol symbol--gain")
+					.attr("r",5)
+					.attr("cx",5)
+					.attr("cy",10);
+		legend.append("circle")
+					.attr("class","symbol symbol--loss")
+					.attr("r",5)
+					.attr("cx",5)
+					.attr("cy",30);
 
-});
-
-function pseudocircle(node) {
-  return node.rings[0].map(function(point){
-    var angle = node.startingAngle - 2 * Math.PI * (point.along / node.perimeter);
-    return [
-      Math.cos(angle) * node.r + node.x,
-      Math.sin(angle) * node.r + node.y
-    ];
-  });
-}
-
-function cleanUpGeometry(node) {
-
-  node.rings = (node.geometry.type === "Polygon" ? [node.geometry.coordinates] : node.geometry.coordinates);
-
-  node.rings = node.rings.map(function(polygon){
-    polygon[0].area = d3.polygonArea(polygon[0]);
-    polygon[0].centroid = d3.polygonCentroid(polygon[0]);
-    return polygon[0];
-  });
-
-  node.rings.sort((a, b) => b.area - a.area);
-
-  node.perimeter = d3.polygonLength(node.rings[0]);
-
-  // Optional step, but makes for more circular circles
-  bisect(node.rings[0], node.perimeter / 72);
-
-  node.rings[0].reduce(function(prev, point){
-    point.along = prev ? prev.along + distance(point, prev) : 0;
-    node.perimeter = point.along;
-    return point;
-  }, null);
-
-  node.startingAngle = Math.atan2(node.rings[0][0][1] - node.y0, node.rings[0][0][0] - node.x0);
-
-}
-
-function bisect(ring, maxSegmentLength) {
-  for (var i = 0; i < ring.length; i++) {
-    var a = ring[i], b = i === ring.length - 1 ? ring[0] : ring[i + 1];
-
-    while (distance(a, b) > maxSegmentLength) {
-      b = midpoint(a, b);
-      ring.splice(i + 1, 0, b);
-    }
-  }
-}
-
-function distance(a, b) {
-  return Math.sqrt((a[0] - b[0]) * (a[0] - b[0]) + (a[1] - b[1]) * (a[1] - b[1]));
-}
-
-function midpoint(a, b) {
-  return [a[0] + (b[0] - a[0]) * 0.5, a[1] + (b[1] - a[1]) * 0.5];
-}
-
-function pathString(d) {
-  return (d.rings || d).map(ring => "M" + ring.join("L") + "Z").join(" ");
-}
+		legend.append("text").text("Births per 1000 women ages 15-19")
