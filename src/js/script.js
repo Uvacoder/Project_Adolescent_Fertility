@@ -9,7 +9,7 @@ const storyId = scrollytellEl.getAttribute('data-story-id');
 
 const html = `<style>#scrollytell .scrollama-steps{position:relative;padding:0;margin:0 auto;pointer-events:none}#scrollytell 
 .flourish-container{position:-webkit-sticky;position:sticky;left:0;width:100%;margin:0;transform:translate3d(0,0,0)}#scrollytell 
-.step{color:#111;margin-left: 950px;width:480px}#scrollytell .step:last-child{margin-bottom:0}#scrollytell .step 
+.step{color:#111;margin:auto;width:480px}#scrollytell .step:last-child{margin-bottom:0}#scrollytell .step 
 .step-content{background-size:300px 300px;border-radius:50%;position:relative;text-align:center;width:300px}#scrollytell 
 .step .step-content 
 .step-content-inner{box-sizing:border-box;color:#0a3147;left:50%;line-height:36px;font-size:30px;padding:27px;position:absolute;top:50%;transform:translate(-50%,-50%);width:0px}

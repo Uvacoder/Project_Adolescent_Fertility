@@ -46,7 +46,7 @@ const createFlourishStory = (storyId, slide = null) => {
     ? (iframe.style.width = chartWidth)
     : isSafari()
     ? (iframe.style.width = flourishContainer.offsetWidth + 'px')
-    : (iframe.style.width = '70%');
+    : (iframe.style.width = '100%');
 
   chartHeight &&
     ('%' === chartHeight.charAt(chartHeight.length - 1) &&
